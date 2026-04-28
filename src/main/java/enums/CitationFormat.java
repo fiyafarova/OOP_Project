@@ -1,5 +1,5 @@
 package enums;
 
-public class CitationFormat {
-
+public enum CitationFormat {
+    PLAIN_TEXT, BIBTEX
 }

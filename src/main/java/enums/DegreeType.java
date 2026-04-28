@@ -1,5 +1,5 @@
 package enums;
 
-public class DegreeType {
-
+public enum DegreeType {
+    MASTER, PHD
 }

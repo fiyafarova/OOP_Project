@@ -1,5 +1,5 @@
 package enums;
 
-public class NewsTopic {
-
+public enum NewsTopic {
+    RESEARCH, GENERAL, ANNOUNCEMENT
 }
