@@ -31,23 +31,54 @@ public class Course implements Serializable {
         this.prerequisites = new ArrayList<>();
     }
 
-    public String getCourseCode() { return courseCode; }
-    public void setCourseCode(String courseCode) { this.courseCode = courseCode; }
+    public String getCourseCode() {
+        return courseCode;
+    }
 
-    public String getCourseName() { return courseName; }
-    public void setCourseName(String courseName) { this.courseName = courseName; }
+    public void setCourseCode(String courseCode) {
+        this.courseCode = courseCode;
+    }
 
-    public int getCredits() { return credits; }
-    public void setCredits(int credits) { this.credits = credits; }
 
-    public CourseType getCourseType() { return courseType; }
-    public void setCourseType(CourseType courseType) { this.courseType = courseType; }
+    public String getCourseName() {
+        return courseName;
+    }
 
-    public String getTargetSchool() { return targetSchool; }
-    public void setTargetSchool(String targetSchool) { this.targetSchool = targetSchool; }
+    public void setCourseName(String courseName) {
+        this.courseName = courseName;
+    }
 
-    public List<Course> getPrerequisites() { return prerequisites; }
-    public void setPrerequisites(List<Course> prerequisites) { this.prerequisites = prerequisites; }
+    public int getCredits() {
+        return credits;
+    }
+
+    public void setCredits(int credits) {
+        this.credits = credits;
+    }
+
+    public CourseType getCourseType() {
+        return courseType;
+    }
+
+    public void setCourseType(CourseType courseType) {
+        this.courseType = courseType;
+    }
+
+    public String getTargetSchool() {
+        return targetSchool;
+    }
+
+    public void setTargetSchool(String targetSchool) {
+        this.targetSchool = targetSchool;
+    }
+
+    public List<Course> getPrerequisites() {
+        return prerequisites;
+    }
+
+    public void setPrerequisites(List<Course> prerequisites) {
+        this.prerequisites = prerequisites;
+    }
 
     @Override
     public boolean equals(Object o) {

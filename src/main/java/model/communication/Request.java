@@ -18,7 +18,7 @@ public class Request implements Serializable {
 
     public Request() {
         this.id = UUID.randomUUID().toString();
-        this.status = RequestStatus.PENDING;
+        this.status = RequestStatus.NEW;
     }
 
     public Request(User sender, String content, UrgencyLevel urgencyLevel) {
@@ -26,27 +26,52 @@ public class Request implements Serializable {
         this.sender = sender;
         this.content = content;
         this.urgencyLevel = urgencyLevel;
-        this.status = RequestStatus.PENDING;
+        this.status = RequestStatus.NEW;
     }
 
-    public String getId() { return id; }
-    public void setId(String id) { this.id = id; }
+    public String getId() {
+        return id;
+    }
 
-    public User getSender() { return sender; }
-    public void setSender(User sender) { this.sender = sender; }
+    public void setId(String id) {
+        this.id = id;
+    }
 
-    public String getContent() { return content; }
-    public void setContent(String content) { this.content = content; }
+    public User getSender() {
+        return sender;
+    }
 
-    public UrgencyLevel getUrgencyLevel() { return urgencyLevel; }
-    public void setUrgencyLevel(UrgencyLevel urgencyLevel) { this.urgencyLevel = urgencyLevel; }
+    public void setSender(User sender) {
+        this.sender = sender;
+    }
 
-    public RequestStatus getStatus() { return status; }
-    public void setStatus(RequestStatus status) { this.status = status; }
+    public String getContent() {
+        return content;
+    }
+
+    public void setContent(String content) {
+        this.content = content;
+    }
+
+    public UrgencyLevel getUrgencyLevel() {
+        return urgencyLevel;
+    }
+
+    public void setUrgencyLevel(UrgencyLevel urgencyLevel) {
+        this.urgencyLevel = urgencyLevel;
+    }
+
+    public RequestStatus getStatus() {
+        return status;
+    }
+
+    public void setStatus(RequestStatus status) {
+        this.status = status;
+    }
 
     @Override
     public String toString() {
         return "Request{id=" + id + ", sender=" + sender +
-               ", urgency=" + urgencyLevel + ", status=" + status + "}";
+                ", urgency=" + urgencyLevel + ", status=" + status + "}";
     }
 }

@@ -16,8 +16,8 @@ public class GraduateStudent extends Student {
     private List<ResearchPaper> diplomaPapers;
 
     public GraduateStudent(String firstName, String lastName, String login,
-                           String password, School school, DegreeType degreeType) {
-        super(firstName, lastName, login, password, school);
+                           String password, School school, DegreeType degreeType, int yearOfStudy) {
+        super(firstName, lastName, login, password, school, yearOfStudy);
         this.degreeType = degreeType;
         this.diplomaPapers = new ArrayList<>();
     }

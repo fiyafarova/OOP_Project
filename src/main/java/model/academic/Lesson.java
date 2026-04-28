@@ -12,7 +12,8 @@ public class Lesson implements Serializable {
     private LocalDateTime time;
     private String room;
 
-    public Lesson() {}
+    public Lesson() {
+    }
 
     public Lesson(LessonType lessonType, LocalDateTime time, String room) {
         this.lessonType = lessonType;
@@ -20,14 +21,29 @@ public class Lesson implements Serializable {
         this.room = room;
     }
 
-    public LessonType getLessonType() { return lessonType; }
-    public void setLessonType(LessonType lessonType) { this.lessonType = lessonType; }
+    public LessonType getLessonType() {
+        return lessonType;
+    }
 
-    public LocalDateTime getTime() { return time; }
-    public void setTime(LocalDateTime time) { this.time = time; }
+    public void setLessonType(LessonType lessonType) {
+        this.lessonType = lessonType;
+    }
 
-    public String getRoom() { return room; }
-    public void setRoom(String room) { this.room = room; }
+    public LocalDateTime getTime() {
+        return time;
+    }
+
+    public void setTime(LocalDateTime time) {
+        this.time = time;
+    }
+
+    public String getRoom() {
+        return room;
+    }
+
+    public void setRoom(String room) {
+        this.room = room;
+    }
 
     @Override
     public String toString() {

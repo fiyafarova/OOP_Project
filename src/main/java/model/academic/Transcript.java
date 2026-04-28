@@ -37,16 +37,21 @@ public class Transcript implements Serializable {
         return totalCredits == 0 ? 0.0 : totalWeightedGpa / totalCredits;
     }
 
-    public Map<Course, Mark> getGrades() { return grades; }
-    public void setGrades(Map<Course, Mark> grades) { this.grades = grades; }
+    public Map<Course, Mark> getGrades() {
+        return grades;
+    }
+
+    public void setGrades(Map<Course, Mark> grades) {
+        this.grades = grades;
+    }
 
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder("Transcript:\n");
         for (Map.Entry<Course, Mark> entry : grades.entrySet()) {
             sb.append("  ").append(entry.getKey().getCourseName())
-              .append(": ").append(entry.getValue().getLetterGrade())
-              .append(" (").append(entry.getValue().getTotalScore()).append(")\n");
+                    .append(": ").append(entry.getValue().getLetterGrade())
+                    .append(" (").append(entry.getValue().getTotalScore()).append(")\n");
         }
         sb.append(String.format("Overall GPA: %.2f", calculateOverallGpa()));
         return sb.toString();

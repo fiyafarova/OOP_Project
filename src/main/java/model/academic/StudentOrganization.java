@@ -33,18 +33,33 @@ public class StudentOrganization implements Serializable {
         members.remove(student);
     }
 
-    public String getName() { return name; }
-    public void setName(String name) { this.name = name; }
+    public String getName() {
+        return name;
+    }
 
-    public Student getHead() { return head; }
-    public void setHead(Student head) { this.head = head; }
+    public void setName(String name) {
+        this.name = name;
+    }
 
-    public List<Student> getMembers() { return members; }
-    public void setMembers(List<Student> members) { this.members = members; }
+    public Student getHead() {
+        return head;
+    }
+
+    public void setHead(Student head) {
+        this.head = head;
+    }
+
+    public List<Student> getMembers() {
+        return members;
+    }
+
+    public void setMembers(List<Student> members) {
+        this.members = members;
+    }
 
     @Override
     public String toString() {
         return "StudentOrganization{name='" + name + "', head=" + head +
-               ", members=" + members.size() + "}";
+                ", members=" + members.size() + "}";
     }
 }

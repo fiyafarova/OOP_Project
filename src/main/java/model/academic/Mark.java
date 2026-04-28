@@ -10,7 +10,8 @@ public class Mark implements Serializable {
     private double finalExam;     // max 40
     private double totalScore;
 
-    public Mark() {}
+    public Mark() {
+    }
 
     public Mark(double attestation1, double attestation2, double finalExam) {
         this.attestation1 = attestation1;
@@ -39,25 +40,36 @@ public class Mark implements Serializable {
         return totalScore >= 50;
     }
 
-    public double getAttestation1() { return attestation1; }
+    public double getAttestation1() {
+        return attestation1;
+    }
+
     public void setAttestation1(double attestation1) {
         this.attestation1 = attestation1;
         recalculate();
     }
 
-    public double getAttestation2() { return attestation2; }
+    public double getAttestation2() {
+        return attestation2;
+    }
+
     public void setAttestation2(double attestation2) {
         this.attestation2 = attestation2;
         recalculate();
     }
 
-    public double getFinalExam() { return finalExam; }
+    public double getFinalExam() {
+        return finalExam;
+    }
+
     public void setFinalExam(double finalExam) {
         this.finalExam = finalExam;
         recalculate();
     }
 
-    public double getTotalScore() { return totalScore; }
+    public double getTotalScore() {
+        return totalScore;
+    }
 
     private void recalculate() {
         this.totalScore = this.attestation1 + this.attestation2 + this.finalExam;
@@ -66,7 +78,7 @@ public class Mark implements Serializable {
     @Override
     public String toString() {
         return "Mark{att1=" + attestation1 + ", att2=" + attestation2 +
-               ", final=" + finalExam + ", total=" + totalScore +
-               ", grade=" + getLetterGrade() + "}";
+                ", final=" + finalExam + ", total=" + totalScore +
+                ", grade=" + getLetterGrade() + "}";
     }
 }
