@@ -3,13 +3,12 @@ package patterns;
 import enums.DegreeType;
 import enums.ManagerType;
 import enums.School;
-import enums.TeacherPosition;
-import model.employees.Admin;
-import model.employees.Manager;
-import model.employees.TechSupportSpecialist;
-import model.employees.Teacher;
-import model.users.GraduateStudent;
-import model.users.Student;
+import model.users.employees.Admin;
+import model.users.employees.Manager;
+import model.users.employees.TechSupportSpecialist;
+import model.users.employees.Teacher;
+import model.users.students.GraduateStudent;
+import model.users.students.Student;
 
 import java.util.Map;
 

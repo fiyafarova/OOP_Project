@@ -1,4 +1,4 @@
-package model.users;
+package model.users.students;
 
 import enums.DegreeType;
 import enums.School;

@@ -1,6 +1,6 @@
 package model.research;
 
-import model.users.GraduateStudent;
+import model.users.students.GraduateStudent;
 
 public class StudentResearcher extends ResearcherDecorator {
     private final GraduateStudent student;

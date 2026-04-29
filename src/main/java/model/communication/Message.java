@@ -1,6 +1,6 @@
 package model.communication;
 
-import model.employees.Employee;
+import model.users.employees.Employee;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;

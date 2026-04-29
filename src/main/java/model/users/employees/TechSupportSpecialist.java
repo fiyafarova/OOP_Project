@@ -1,6 +1,5 @@
-package model.employees;
+package model.users.employees;
 
-import enums.RequestStatus;
 import enums.School;
 import model.communication.Request;
 

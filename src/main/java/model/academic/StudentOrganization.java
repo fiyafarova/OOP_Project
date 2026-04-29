@@ -1,6 +1,6 @@
 package model.academic;
 
-import model.users.Student;
+import model.users.students.Student;
 
 import java.io.Serializable;
 import java.util.ArrayList;

@@ -1,8 +1,7 @@
-package model.employees;
+package model.users.employees;
 
 import enums.School;
 import model.users.User;
-import patterns.DataStorage;
 
 import java.util.List;
 

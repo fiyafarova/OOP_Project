@@ -1,13 +1,12 @@
-package model.employees;
+package model.users.employees;
 
 import enums.ManagerType;
 import enums.School;
-import enums.UrgencyLevel;
 import model.academic.Course;
 import model.academic.Report;
 import model.communication.News;
 import model.communication.Request;
-import model.users.Student;
+import model.users.students.Student;
 
 import java.util.Comparator;
 import java.util.List;

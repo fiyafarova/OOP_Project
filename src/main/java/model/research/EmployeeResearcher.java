@@ -1,6 +1,6 @@
 package model.research;
 
-import model.employees.Employee;
+import model.users.employees.Employee;
 
 public class EmployeeResearcher extends ResearcherDecorator {
     private final Employee employee;

@@ -2,15 +2,14 @@ package patterns;
 
 import enums.School;
 import model.academic.Course;
-import model.academic.Report;
 import model.communication.News;
 import model.communication.Request;
 import model.research.Journal;
 import model.research.ResearchPaper;
 import model.research.ResearcherDecorator;
-import model.users.Student;
+import model.users.students.Student;
 import model.users.User;
-import model.employees.Teacher;
+import model.users.employees.Teacher;
 
 import java.io.*;
 import java.util.Comparator;

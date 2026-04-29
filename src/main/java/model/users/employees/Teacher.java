@@ -1,11 +1,11 @@
-package model.employees;
+package model.users.employees;
 
 import enums.School;
 import enums.TeacherPosition;
 import enums.UrgencyLevel;
 import model.academic.Course;
 import model.academic.Mark;
-import model.users.Student;
+import model.users.students.Student;
 
 import java.util.ArrayList;
 import java.util.Comparator;

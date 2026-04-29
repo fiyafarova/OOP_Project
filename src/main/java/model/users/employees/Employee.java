@@ -1,10 +1,7 @@
-package model.employees;
+package model.users.employees;
 
 import enums.School;
-import model.communication.Message;
 import model.users.User;
-
-import java.util.Objects;
 
 // абстрактный класс для всех сотрудников универа
 // Employee может отправить сообщение любому другому Employee
