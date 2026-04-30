@@ -52,3 +52,4 @@ public class Teacher extends Employee implements Serializable {
             + ", rating=" + String.format("%.1f", rating) + "]";
     }
 }
+

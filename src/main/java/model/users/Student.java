@@ -17,8 +17,6 @@ import java.util.List;
 import java.util.Map;
 
 public class Student extends Employee implements Serializable {
-    // Required for Java serialization — ensures class version compatibility
-    // when saving/loading DataStorage objects to disk.
     private static final long serialVersionUID = 1L;
 
     private double gpa;

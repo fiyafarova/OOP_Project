@@ -155,7 +155,7 @@ public class TeacherMenu {
                     }
                 }
             } catch (NumberFormatException e) {
-                // continue without student
+
             }
         }
         System.out.print("Urgency (LOW / MEDIUM / HIGH): ");
