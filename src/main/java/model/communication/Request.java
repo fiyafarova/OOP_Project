@@ -5,6 +5,7 @@ import enums.UrgencyLevel;
 import model.users.User;
 
 import java.io.Serializable;
+import java.time.LocalDate;
 import java.util.UUID;
 
 public class Request implements Serializable {
@@ -12,21 +13,24 @@ public class Request implements Serializable {
 
     private String id;
     private User sender;
-    private String content;
+    private String description;
     private UrgencyLevel urgencyLevel;
     private RequestStatus status;
+    private LocalDate createdAt;
 
     public Request() {
         this.id = UUID.randomUUID().toString();
-        this.status = RequestStatus.PENDING;
+        this.status = RequestStatus.NEW;
+        this.createdAt = LocalDate.now();
     }
 
-    public Request(User sender, String content, UrgencyLevel urgencyLevel) {
+    public Request(User sender, String description, UrgencyLevel urgencyLevel) {
         this.id = UUID.randomUUID().toString();
         this.sender = sender;
-        this.content = content;
+        this.description = description;
         this.urgencyLevel = urgencyLevel;
-        this.status = RequestStatus.PENDING;
+        this.status = RequestStatus.NEW;
+        this.createdAt = LocalDate.now();
     }
 
     public String getId() { return id; }
@@ -35,8 +39,8 @@ public class Request implements Serializable {
     public User getSender() { return sender; }
     public void setSender(User sender) { this.sender = sender; }
 
-    public String getContent() { return content; }
-    public void setContent(String content) { this.content = content; }
+    public String getDescription() { return description; }
+    public void setDescription(String description) { this.description = description; }
 
     public UrgencyLevel getUrgencyLevel() { return urgencyLevel; }
     public void setUrgencyLevel(UrgencyLevel urgencyLevel) { this.urgencyLevel = urgencyLevel; }
@@ -44,9 +48,11 @@ public class Request implements Serializable {
     public RequestStatus getStatus() { return status; }
     public void setStatus(RequestStatus status) { this.status = status; }
 
+    public LocalDate getCreatedAt() { return createdAt; }
+
     @Override
     public String toString() {
-        return "Request{id=" + id + ", sender=" + sender +
-               ", urgency=" + urgencyLevel + ", status=" + status + "}";
+        return "Request{id=" + id + ", sender=" + sender
+            + ", urgency=" + urgencyLevel + ", status=" + status + "}";
     }
 }

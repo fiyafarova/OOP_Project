@@ -1,81 +1,193 @@
 package model.users;
 
+import enums.School;
+import exceptions.CourseFailLimitException;
 import exceptions.MaxCreditsException;
 import model.academic.Course;
+import model.academic.Mark;
+import model.academic.StudentOrganization;
 import model.academic.Transcript;
+import model.employees.Employee;
+import model.employees.Teacher;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
-public class Student extends User implements Serializable {
+public class Student extends Employee implements Serializable {
+    // Serializable version ID — ensures class compatibility during Java object serialization.
+    // Required because Student implements Serializable via Employee → User chain.
     private static final long serialVersionUID = 1L;
-    private static final int MAX_CREDITS = 21;
 
-    private String school;
+    private double gpa;
+    private String major;
+    private School school;
     private int yearOfStudy;
-    private int credits;
-    private Transcript transcript;
-    private List<Course> registeredCourses;
+    private List<Course> courses;
+    private Map<Course, Mark> marks;
+    private int totalCredits;
+    private Map<Course, Integer> failCount;
+    private List<StudentOrganization> organizations;
 
     public Student() {
-        this.registeredCourses = new ArrayList<>();
-        this.transcript = new Transcript();
-        this.credits = 0;
+        this.courses = new ArrayList<>();
+        this.marks = new HashMap<>();
+        this.failCount = new HashMap<>();
+        this.organizations = new ArrayList<>();
     }
 
     public Student(String id, String name, String surname, String email, String password,
-                   String school, int yearOfStudy) {
+                   String major, School school, int yearOfStudy) {
         super(id, name, surname, email, password);
+        this.major = major;
         this.school = school;
         this.yearOfStudy = yearOfStudy;
-        this.credits = 0;
-        this.registeredCourses = new ArrayList<>();
-        this.transcript = new Transcript();
+        this.courses = new ArrayList<>();
+        this.marks = new HashMap<>();
+        this.failCount = new HashMap<>();
+        this.organizations = new ArrayList<>();
     }
 
-    public void registerToCourse(Course course) throws MaxCreditsException {
-        if (this.credits + course.getCredits() > MAX_CREDITS) {
+    public void registerCourse(Course course) throws MaxCreditsException, CourseFailLimitException {
+        if (totalCredits + course.getCredits() > 21) {
             throw new MaxCreditsException(
-                "Cannot register for '" + course.getCourseName() +
-                "': adding " + course.getCredits() + " credits would bring total to " +
-                (this.credits + course.getCredits()) + ", exceeding the " + MAX_CREDITS + "-credit limit."
+                "Cannot register: adding " + course.getCredits()
+                + " credits would exceed the 21-credit limit (current: " + totalCredits + ")."
             );
         }
-
-        List<Course> prerequisites = course.getPrerequisites();
-        if (prerequisites != null && !prerequisites.isEmpty()) {
-            for (Course prereq : prerequisites) {
-                if (!transcript.getGrades().containsKey(prereq)) {
-                    throw new IllegalStateException(
-                        "Prerequisite not met: '" + prereq.getCourseName() + "' must be completed before registering for '" +
-                        course.getCourseName() + "'."
-                    );
-                }
-            }
+        if (failCount.getOrDefault(course, 0) >= 3) {
+            throw new CourseFailLimitException(
+                "Cannot register for '" + course.getName()
+                + "': failed 3 times already."
+            );
         }
-
-        registeredCourses.add(course);
-        this.credits += course.getCredits();
+        courses.add(course);
+        totalCredits += course.getCredits();
+        course.enrollStudent(this);
     }
 
-    public String getSchool() { return school; }
-    public void setSchool(String school) { this.school = school; }
+    public void dropCourse(Course course) {
+        if (courses.remove(course)) {
+            totalCredits -= course.getCredits();
+            course.removeStudent(this);
+        }
+    }
+
+    public void viewMarks() {
+        if (marks.isEmpty()) {
+            System.out.println("No marks yet.");
+            return;
+        }
+        marks.forEach((course, mark) ->
+            System.out.println(course.getName() + ": " + mark.getLetterGrade()
+                + " (" + mark.getTotalScore() + ")"));
+    }
+
+    public Mark getMarkForCourse(Course course) {
+        return marks.get(course);
+    }
+
+    public Transcript getTranscript() {
+        Transcript transcript = new Transcript(this, new ArrayList<>(marks.values()));
+        transcript.generate();
+        return transcript;
+    }
+
+    public void rateTeacher(Teacher teacher, int rating) {
+        teacher.updateRating(rating);
+    }
+
+    public void joinOrganization(StudentOrganization org) {
+        organizations.add(org);
+        org.addMember(this);
+    }
+
+    public void leaveOrganization(StudentOrganization org) {
+        organizations.remove(org);
+        org.removeMember(this);
+    }
+
+    public void addMark(Course course, Mark mark) {
+        marks.put(course, mark);
+        if (!mark.isPassed()) {
+            failCount.merge(course, 1, Integer::sum);
+        }
+        if (!marks.isEmpty()) {
+            gpa = marks.values().stream()
+                .mapToDouble(Mark::getGpaPoints)
+                .average()
+                .orElse(0.0);
+        }
+    }
+
+    public double getGpa() { return gpa; }
+    public void setGpa(double gpa) { this.gpa = gpa; }
+
+    public String getMajor() { return major; }
+    public void setMajor(String major) { this.major = major; }
+
+    public School getSchool() { return school; }
+    public void setSchool(School school) { this.school = school; }
 
     public int getYearOfStudy() { return yearOfStudy; }
     public void setYearOfStudy(int yearOfStudy) { this.yearOfStudy = yearOfStudy; }
 
-    public int getCredits() { return credits; }
+    public List<Course> getCourses() { return courses; }
+    public void setCourses(List<Course> courses) { this.courses = courses; }
 
-    public Transcript getTranscript() { return transcript; }
-    public void setTranscript(Transcript transcript) { this.transcript = transcript; }
+    public Map<Course, Mark> getMarks() { return marks; }
+    public void setMarks(Map<Course, Mark> marks) { this.marks = marks; }
 
-    public List<Course> getRegisteredCourses() { return registeredCourses; }
-    public void setRegisteredCourses(List<Course> registeredCourses) { this.registeredCourses = registeredCourses; }
+    public int getTotalCredits() { return totalCredits; }
+
+    public Map<Course, Integer> getFailCount() { return failCount; }
+
+    public List<StudentOrganization> getOrganizations() { return organizations; }
+    public void setOrganizations(List<StudentOrganization> organizations) { this.organizations = organizations; }
+
+    @Override
+    public boolean equals(Object o) { return super.equals(o); }
+
+    @Override
+    public int hashCode() { return super.hashCode(); }
+
+    private void recalculateGpa() {
+        gpa = marks.values().stream()
+            .mapToDouble(Mark::getGpaPoints)
+            .average()
+            .orElse(0.0);
+    }
+
+    public void retake(Course course, double newFinalExam) {
+        Mark current = marks.get(course);
+        if (current == null) {
+            System.out.println("No mark found for course: " + course.getName());
+            return;
+        }
+        if (!current.isFX()) {
+            System.out.println("Retake not allowed. Grade is " + current.getLetterGrade()
+                + ". Only FX grade allows exam retake.");
+            return;
+        }
+        Mark retakeMark = new Mark(current.getAtt1(), current.getAtt2(), newFinalExam);
+        marks.put(course, retakeMark);
+        if (!retakeMark.isPassed()) {
+            failCount.merge(course, 1, Integer::sum);
+            System.out.println("Retake failed. New grade: " + retakeMark.getLetterGrade());
+        } else {
+            System.out.println("Retake passed! New grade: " + retakeMark.getLetterGrade());
+        }
+        recalculateGpa();
+    }
 
     @Override
     public String toString() {
-        return "Student{" + getName() + " " + getSurname() +
-               ", school=" + school + ", year=" + yearOfStudy + ", credits=" + credits + "}";
+        return "Student[name=" + getName() + " " + getSurname()
+            + ", gpa=" + String.format("%.2f", gpa)
+            + ", school=" + school
+            + ", credits=" + totalCredits + "]";
     }
+
 }

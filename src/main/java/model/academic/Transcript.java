@@ -1,54 +1,58 @@
 package model.academic;
 
+import model.users.Student;
+
 import java.io.Serializable;
-import java.util.HashMap;
+import java.time.LocalDate;
+import java.util.List;
 import java.util.Map;
 
 public class Transcript implements Serializable {
     private static final long serialVersionUID = 1L;
 
-    private Map<Course, Mark> grades;
+    private Student student;
+    private List<Mark> marks;
+    private double gpa;
+    private LocalDate generatedAt;
 
-    public Transcript() {
-        this.grades = new HashMap<>();
+    public Transcript() {}
+
+    public Transcript(Student student, List<Mark> marks) {
+        this.student = student;
+        this.marks = marks;
     }
 
-    public void addGrade(Course course, Mark mark) {
-        grades.put(course, mark);
+    public void generate() {
+        gpa = marks.stream()
+            .mapToDouble(Mark::getGpaPoints)
+            .average()
+            .orElse(0.0);
+        generatedAt = LocalDate.now();
     }
 
-    public Mark getGrade(Course course) {
-        return grades.get(course);
-    }
-
-    public double calculateOverallGpa() {
-        if (grades.isEmpty()) return 0.0;
-
-        double totalWeightedGpa = 0.0;
-        int totalCredits = 0;
-
-        for (Map.Entry<Course, Mark> entry : grades.entrySet()) {
-            int credits = entry.getKey().getCredits();
-            double gpa = entry.getValue().getGpaPoints();
-            totalWeightedGpa += gpa * credits;
-            totalCredits += credits;
+    public void print() {
+        System.out.println("  TRANSCRIPT");
+        System.out.println("  Student : " + student.getName() + " " + student.getSurname());
+        System.out.println("  Date    : " + generatedAt);
+        System.out.println("------------------------------------------------------------");
+        System.out.printf("  %-30s %-8s %-10s%n", "Course", "Grade", "Total");
+        System.out.println("------------------------------------------------------------");
+        for (Map.Entry<Course, Mark> entry : student.getMarks().entrySet()) {
+            System.out.printf("  %-30s %-8s %-10.1f%n",
+                entry.getKey().getName(),
+                entry.getValue().getLetterGrade(),
+                entry.getValue().getTotalScore());
         }
-
-        return totalCredits == 0 ? 0.0 : totalWeightedGpa / totalCredits;
+        System.out.println("------------------------------------------------------------");
+        System.out.printf("  GPA: %.2f%n", gpa);
     }
 
-    public Map<Course, Mark> getGrades() { return grades; }
-    public void setGrades(Map<Course, Mark> grades) { this.grades = grades; }
+    public Student getStudent() { return student; }
+    public void setStudent(Student student) { this.student = student; }
 
-    @Override
-    public String toString() {
-        StringBuilder sb = new StringBuilder("Transcript:\n");
-        for (Map.Entry<Course, Mark> entry : grades.entrySet()) {
-            sb.append("  ").append(entry.getKey().getCourseName())
-              .append(": ").append(entry.getValue().getLetterGrade())
-              .append(" (").append(entry.getValue().getTotalScore()).append(")\n");
-        }
-        sb.append(String.format("Overall GPA: %.2f", calculateOverallGpa()));
-        return sb.toString();
-    }
+    public List<Mark> getMarks() { return marks; }
+    public void setMarks(List<Mark> marks) { this.marks = marks; }
+
+    public double getGpa() { return gpa; }
+    public LocalDate getGeneratedAt() { return generatedAt; }
 }
