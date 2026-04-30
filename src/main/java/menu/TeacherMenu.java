@@ -132,9 +132,38 @@ public class TeacherMenu {
     }
 
     private void sendComplaint() {
-        System.out.print("Enter complaint: ");
-        String complaint = scanner.nextLine();
-        teacher.sendComplaint(complaint);
+        Student aboutStudent = null;
+        List<Course> courses = teacher.getCourses();
+        if (!courses.isEmpty()) {
+            System.out.println("Select course (0 to skip):");
+            for (int i = 0; i < courses.size(); i++) {
+                System.out.println((i + 1) + ". " + courses.get(i));
+            }
+            try {
+                int cidx = Integer.parseInt(scanner.nextLine().trim()) - 1;
+                if (cidx >= 0 && cidx < courses.size()) {
+                    List<Student> students = courses.get(cidx).getEnrolledStudents();
+                    if (!students.isEmpty()) {
+                        System.out.println("Select student:");
+                        for (int i = 0; i < students.size(); i++) {
+                            System.out.println((i + 1) + ". " + students.get(i).getFullName());
+                        }
+                        int sidx = Integer.parseInt(scanner.nextLine().trim()) - 1;
+                        if (sidx >= 0 && sidx < students.size()) {
+                            aboutStudent = students.get(sidx);
+                        }
+                    }
+                }
+            } catch (NumberFormatException e) {
+                // continue without student
+            }
+        }
+        System.out.print("Urgency (LOW / MEDIUM / HIGH): ");
+        String urgency = scanner.nextLine().trim();
+        System.out.print("Complaint description: ");
+        String desc = scanner.nextLine();
+        String prefix = aboutStudent != null ? "[About: " + aboutStudent.getFullName() + "] " : "";
+        teacher.sendComplaint(prefix + "[" + urgency + "] " + desc);
     }
 
     private void sendMessage() {

@@ -52,7 +52,7 @@ public class Request implements Serializable {
 
     @Override
     public String toString() {
-        return "Request{id=" + id + ", sender=" + sender
-            + ", urgency=" + urgencyLevel + ", status=" + status + "}";
+        return "Request[id=" + id.substring(0, 8) + "..., status=" + status
+            + ", urgency=" + urgencyLevel + ", desc=" + description + "]";
     }
 }

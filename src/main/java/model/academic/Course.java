@@ -105,6 +105,7 @@ public class Course implements Serializable {
 
     @Override
     public String toString() {
-        return code + " - " + name + " (" + credits + " credits)";
+        return "Course[code=" + code + ", name=" + name + ", credits=" + credits
+            + ", school=" + school + ", type=" + courseType + "]";
     }
 }

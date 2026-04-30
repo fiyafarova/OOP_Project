@@ -33,16 +33,13 @@ public class Report implements Serializable {
 
         averageGradesByCourse = new HashMap<>();
         for (Course course : courses) {
-            List<Student> enrolled = course.getEnrolledStudents();
-            if (!enrolled.isEmpty()) {
-                double avg = enrolled.stream()
-                    .map(s -> s.getMarkForCourse(course))
-                    .filter(m -> m != null)
-                    .mapToDouble(Mark::getTotalScore)
-                    .average()
-                    .orElse(0.0);
-                averageGradesByCourse.put(course, avg);
-            }
+            double avg = course.getEnrolledStudents().stream()
+                .map(s -> s.getMarkForCourse(course))
+                .filter(m -> m != null)
+                .mapToDouble(Mark::getTotalScore)
+                .average()
+                .orElse(0.0);
+            averageGradesByCourse.put(course, avg);
         }
     }
 

@@ -17,8 +17,8 @@ import java.util.List;
 import java.util.Map;
 
 public class Student extends Employee implements Serializable {
-    // Serializable version ID — ensures class compatibility during Java object serialization.
-    // Required because Student implements Serializable via Employee → User chain.
+    // Required for Java serialization — ensures class version compatibility
+    // when saving/loading DataStorage objects to disk.
     private static final long serialVersionUID = 1L;
 
     private double gpa;
@@ -121,6 +121,8 @@ public class Student extends Employee implements Serializable {
                 .orElse(0.0);
         }
     }
+
+    public String getFullName() { return getName() + " " + getSurname(); }
 
     public double getGpa() { return gpa; }
     public void setGpa(double gpa) { this.gpa = gpa; }

@@ -31,20 +31,16 @@ public class Transcript implements Serializable {
     }
 
     public void print() {
-        System.out.println("  TRANSCRIPT");
-        System.out.println("  Student : " + student.getName() + " " + student.getSurname());
-        System.out.println("  Date    : " + generatedAt);
-        System.out.println("------------------------------------------------------------");
-        System.out.printf("  %-30s %-8s %-10s%n", "Course", "Grade", "Total");
-        System.out.println("------------------------------------------------------------");
+        System.out.println("========== TRANSCRIPT ==========");
+        System.out.println("Student  : " + student.getFullName());
+        System.out.println("Generated: " + generatedAt);
+        System.out.println("--------------------------------");
         for (Map.Entry<Course, Mark> entry : student.getMarks().entrySet()) {
-            System.out.printf("  %-30s %-8s %-10.1f%n",
-                entry.getKey().getName(),
-                entry.getValue().getLetterGrade(),
-                entry.getValue().getTotalScore());
+            System.out.printf("%-30s %s%n", entry.getKey().getName(), entry.getValue());
         }
-        System.out.println("------------------------------------------------------------");
-        System.out.printf("  GPA: %.2f%n", gpa);
+        System.out.println("--------------------------------");
+        System.out.printf("GPA      : %.2f%n", gpa);
+        System.out.println("================================");
     }
 
     public Student getStudent() { return student; }

@@ -141,10 +141,10 @@ public class StudentMenu {
                 System.out.println("Invalid selection.");
                 return;
             }
-            System.out.print("Rating (1-5): ");
+            System.out.print("Rating (1-10): ");
             int rating = Integer.parseInt(scanner.nextLine().trim());
-            if (rating < 1 || rating > 5) {
-                System.out.println("Rating must be between 1 and 5.");
+            if (rating < 1 || rating > 10) {
+                System.out.println("Rating must be between 1 and 10.");
                 return;
             }
             student.rateTeacher(teachers.get(idx), rating);

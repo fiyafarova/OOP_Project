@@ -13,6 +13,8 @@ public class Lesson implements Serializable {
     private Course course;
     private LocalDateTime date;
     private String description;
+    private String room;
+    private String schedule;
 
     public Lesson() {}
 
@@ -22,6 +24,17 @@ public class Lesson implements Serializable {
         this.course = course;
         this.date = date;
         this.description = description;
+    }
+
+    public Lesson(String title, LessonType lessonType, Course course, LocalDateTime date,
+                  String description, String room, String schedule) {
+        this.title = title;
+        this.lessonType = lessonType;
+        this.course = course;
+        this.date = date;
+        this.description = description;
+        this.room = room;
+        this.schedule = schedule;
     }
 
     public String getTitle() { return title; }
@@ -38,6 +51,12 @@ public class Lesson implements Serializable {
 
     public String getDescription() { return description; }
     public void setDescription(String description) { this.description = description; }
+
+    public String getRoom() { return room; }
+    public void setRoom(String room) { this.room = room; }
+
+    public String getSchedule() { return schedule; }
+    public void setSchedule(String schedule) { this.schedule = schedule; }
 
     @Override
     public String toString() {
