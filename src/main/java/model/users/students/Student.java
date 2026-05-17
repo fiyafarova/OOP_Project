@@ -12,24 +12,21 @@ import model.users.employees.Teacher;
 
 import java.util.*;
 
-// студент бакалавриата
-// не более 21 кредита одновременно (бросает MaxCreditsException)
-// не может провалить один курс более 3 раз (бросает CourseFailLimitException)
-// оценка = att1 + att2 + finalExam
-
 public class Student extends User {
+    private static final long serialVersionUID = 1L;
+
     private double gpa;
     private String major;
     private int yearOfStudy;
     private List<Course> courses;
     private Map<Course, Mark> marks;
     private int totalCredits;
-    private Map<Course, Integer> failCount; // счётчик провалов по каждому курсу
+    private Map<Course, Integer> failCount;
     private School school;
-    private double rating;                  // рейтинг преподавателей (выставляет студент)
     private List<StudentOrganization> organizations;
 
-    public Student(String firstName, String lastName, String login, String password, School school, int yearOfStudy) {
+    public Student(String firstName, String lastName, String login,
+                   String password, School school, int yearOfStudy) {
         super(firstName, lastName, login, password);
         this.school = school;
         this.yearOfStudy = yearOfStudy;
@@ -41,56 +38,82 @@ public class Student extends User {
         this.gpa = 0.0;
     }
 
-    // throws MaxCreditsException если credits > 21
-    // throws CourseFailLimitException если курс провален 3+ раза
+    // throws MaxCreditsException if credits > 21
+    // throws CourseFailLimitException if course failed 3+ times
     public void registerCourse(Course course) throws MaxCreditsException, CourseFailLimitException {
-        // добавить course в courses
-        //totalCredits += course.getCredits()
-        //course.enrollStudent(this)
+        if (totalCredits + course.getCredits() > 21) {
+            throw new MaxCreditsException(
+                    "Cannot register: adding " + course.getCredits()
+                            + " credits would exceed the 21-credit limit (current: " + totalCredits + ")."
+            );
+        }
+        if (failCount.getOrDefault(course, 0) >= 3) {
+            throw new CourseFailLimitException(
+                    "Cannot register for '" + course.getName() + "': failed 3 times already."
+            );
+        }
+        courses.add(course);
+        totalCredits += course.getCredits();
+        course.enrollStudent(this);
     }
 
     public void dropCourse(Course course) {
-        // удалить course из courses
-        //totalCredits -= course.getCredits()
-        //course.removeStudent(this)
-    }
-
-    public List<Course> getCourses() {
-        return courses;
+        if (courses.remove(course)) {
+            totalCredits -= course.getCredits();
+            course.removeStudent(this);
+        }
     }
 
     public void viewMarks() {
-        //  вывести все оценки из marks
-    }
-
-    public Map<Course, Mark> getMarks() {
-        return marks;
+        if (marks.isEmpty()) {
+            System.out.println("No marks yet.");
+            return;
+        }
+        marks.forEach((course, mark) ->
+                System.out.println(course.getName() + ": " + mark.getLetterGrade()
+                        + " (" + mark.getTotalScore() + ")"));
     }
 
     public Mark getMarkForCourse(Course course) {
-        // вернуть marks.get(course)
-        return null;
+        return marks.get(course);
     }
 
     public Transcript getTranscript() {
-        // создать новый Transcript(this, new ArrayList<>(marks.values())), вызвать generate() и вернуть
-        return null;
+        Transcript transcript = new Transcript(this, new ArrayList<>(marks.values()));
+        transcript.generate();
+        return transcript;
     }
 
     public void rateTeacher(Teacher teacher, int rating) {
-        // вызвать teacher.updateRating(rating)
+        teacher.updateRating(rating);
     }
 
     public void joinOrganization(StudentOrganization org) {
-        //  добавить org в organizations, вызвать org.addMember(this)
+        if (!organizations.contains(org)) {
+            organizations.add(org);
+            org.addMember(this);
+        }
     }
 
     public void leaveOrganization(StudentOrganization org) {
-        //удалить org из organizations, вызвать org.removeMember(this)
+        organizations.remove(org);
+        org.removeMember(this);
     }
 
-    public List<StudentOrganization> getOrganizations() {
-        return organizations;
+    // Called by Teacher.putMark
+    public void addMark(Course course, Mark mark) {
+        marks.put(course, mark);
+        if (!mark.isPassed()) {
+            failCount.merge(course, 1, Integer::sum);
+        }
+        recalculateGpa();
+    }
+
+    private void recalculateGpa() {
+        gpa = marks.values().stream()
+                .mapToDouble(Mark::getGpaPoints)
+                .average()
+                .orElse(0.0);
     }
 
     public double getGpa() {
@@ -98,6 +121,7 @@ public class Student extends User {
     }
 
     public void setGpa(double gpa) {
+        this.gpa = gpa;
     }
 
     public String getMajor() {
@@ -105,10 +129,15 @@ public class Student extends User {
     }
 
     public void setMajor(String major) {
+        this.major = major;
     }
 
     public int getYearOfStudy() {
         return yearOfStudy;
+    }
+
+    public void setYearOfStudy(int year) {
+        this.yearOfStudy = year;
     }
 
     public School getSchool() {
@@ -116,24 +145,44 @@ public class Student extends User {
     }
 
     public void setSchool(School school) {
+        this.school = school;
+    }
+
+    public List<Course> getCourses() {
+        return courses;
+    }
+
+    public Map<Course, Mark> getMarks() {
+        return marks;
     }
 
     public int getTotalCredits() {
         return totalCredits;
     }
 
+    public Map<Course, Integer> getFailCount() {
+        return failCount;
+    }
+
+    public List<StudentOrganization> getOrganizations() {
+        return organizations;
+    }
+
     @Override
     public String toString() {
-        return null;
+        return "Student[name=" + getFullName()
+                + ", gpa=" + String.format("%.2f", gpa)
+                + ", school=" + school
+                + ", credits=" + totalCredits + "]";
     }
 
     @Override
     public boolean equals(Object o) {
-        return false;
+        return super.equals(o);
     }
 
     @Override
     public int hashCode() {
-        return 0;
+        return super.hashCode();
     }
 }

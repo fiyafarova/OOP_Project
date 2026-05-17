@@ -2,45 +2,58 @@ package model.users.employees;
 
 import enums.School;
 import model.users.User;
+import patterns.DataStorage;
 
 import java.util.List;
 
-// админ системы
-// управляет пользователями и видит логи
-
 public class Admin extends Employee {
+    private static final long serialVersionUID = 1L;
+
     public Admin(String firstName, String lastName, String login, String password) {
-        super(firstName,lastName,login,password, School.ADMIN);
+        super(firstName, lastName, login, password, School.SITE);
     }
 
     public void addUser(User user) {
-        // DataStorage.getInstance().addUser(user)
+        DataStorage.getInstance().addUser(user);
+        DataStorage.getInstance().addLog("Admin " + getFullName() + " added user: " + user.getLogin());
     }
 
     public void removeUser(String userId) {
-        // DataStorage.getInstance().removeUser(userId)
+        DataStorage.getInstance().removeUser(userId);
+        DataStorage.getInstance().addLog("Admin " + getFullName() + " removed user id: " + userId);
     }
 
-    public void updateUser(User user) {
-        // найти пользователя в DataStorage и обновить его данные
+    public void updateUser(User updatedUser) {
+        List<User> users = DataStorage.getInstance().getAllUsers();
+        for (int i = 0; i < users.size(); i++) {
+            if (users.get(i).getId().equals(updatedUser.getId())) {
+                users.set(i, updatedUser);
+                DataStorage.getInstance().addLog("Admin " + getFullName() + " updated user: " + updatedUser.getLogin());
+                return;
+            }
+        }
+        System.out.println("User not found: " + updatedUser.getId());
     }
 
     public List<User> getAllUsers() {
-        // DataStorage.getInstance().getAllUsers()
-        return null;
+        return DataStorage.getInstance().getAllUsers();
     }
 
     public void viewLogs() {
-        //все логи из DataStorage
+        List<String> logs = DataStorage.getInstance().getLogs();
+        if (logs.isEmpty()) {
+            System.out.println("No logs available.");
+            return;
+        }
+        logs.forEach(System.out::println);
     }
 
     public List<String> getLogs() {
-        // DataStorage.getInstance().getLogs()
-        return null;
+        return DataStorage.getInstance().getLogs();
     }
 
     @Override
     public String toString() {
-        return null;
+        return "Admin[name=" + getFullName() + "]";
     }
 }

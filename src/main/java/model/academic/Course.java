@@ -2,8 +2,8 @@ package model.academic;
 
 import enums.CourseType;
 import enums.School;
-import model.employees.Teacher;
-import model.users.Student;
+import model.users.employees.Teacher;
+import model.users.students.Student;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -39,7 +39,9 @@ public class Course implements Serializable {
     }
 
     public void enrollStudent(Student student) {
-        enrolledStudents.add(student);
+        if (!enrolledStudents.contains(student)) {
+            enrolledStudents.add(student);
+        }
     }
 
     public void removeStudent(Student student) {
@@ -48,20 +50,14 @@ public class Course implements Serializable {
 
     public boolean isAvailableFor(Student student) {
         switch (courseType) {
-            case MAJOR:
-                return student.getSchool() == this.school;
-            case MINOR:
-                return student.getSchool() != this.school;
-            case FREE_ELECTIVE:
-                return true;
-            default:
-                return false;
+            case MAJOR:         return student.getSchool() == this.school;
+            case MINOR:         return student.getSchool() != this.school;
+            case FREE_ELECTIVE: return true;
+            default:            return false;
         }
     }
 
-    public void addLesson(Lesson lesson) {
-        lessons.add(lesson);
-    }
+    public void addLesson(Lesson lesson) { lessons.add(lesson); }
 
     public String getCode() { return code; }
     public void setCode(String code) { this.code = code; }
@@ -79,13 +75,13 @@ public class Course implements Serializable {
     public void setCourseType(CourseType courseType) { this.courseType = courseType; }
 
     public Teacher getLectureTeacher() { return lectureTeacher; }
-    public void setLectureTeacher(Teacher lectureTeacher) { this.lectureTeacher = lectureTeacher; }
+    public void setLectureTeacher(Teacher teacher) { this.lectureTeacher = teacher; }
 
     public Teacher getPracticeTeacher() { return practiceTeacher; }
-    public void setPracticeTeacher(Teacher practiceTeacher) { this.practiceTeacher = practiceTeacher; }
+    public void setPracticeTeacher(Teacher teacher) { this.practiceTeacher = teacher; }
 
     public List<Student> getEnrolledStudents() { return enrolledStudents; }
-    public void setEnrolledStudents(List<Student> enrolledStudents) { this.enrolledStudents = enrolledStudents; }
+    public void setEnrolledStudents(List<Student> students) { this.enrolledStudents = students; }
 
     public List<Lesson> getLessons() { return lessons; }
     public void setLessons(List<Lesson> lessons) { this.lessons = lessons; }
@@ -94,18 +90,15 @@ public class Course implements Serializable {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (!(o instanceof Course)) return false;
-        Course course = (Course) o;
-        return Objects.equals(code, course.code);
+        return Objects.equals(code, ((Course) o).code);
     }
 
     @Override
-    public int hashCode() {
-        return Objects.hash(code);
-    }
+    public int hashCode() { return Objects.hash(code); }
 
     @Override
     public String toString() {
         return "Course[code=" + code + ", name=" + name + ", credits=" + credits
-            + ", school=" + school + ", type=" + courseType + "]";
+                + ", school=" + school + ", type=" + courseType + "]";
     }
 }

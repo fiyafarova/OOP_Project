@@ -1,6 +1,6 @@
 package model.academic;
 
-import model.users.Student;
+import model.users.students.Student;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -13,9 +13,7 @@ public class StudentOrganization implements Serializable {
     private List<Student> members;
     private Student head;
 
-    public StudentOrganization() {
-        this.members = new ArrayList<>();
-    }
+    public StudentOrganization() { this.members = new ArrayList<>(); }
 
     public StudentOrganization(String name) {
         this.name = name;
@@ -23,14 +21,12 @@ public class StudentOrganization implements Serializable {
     }
 
     public void addMember(Student student) {
-        if (!members.contains(student)) {
+        if (student != null && !members.contains(student)) {
             members.add(student);
         }
     }
 
-    public void removeMember(Student student) {
-        members.remove(student);
-    }
+    public void removeMember(Student student) { members.remove(student); }
 
     public void setHead(Student student) {
         if (!members.contains(student)) {
@@ -49,7 +45,8 @@ public class StudentOrganization implements Serializable {
 
     @Override
     public String toString() {
-        return "StudentOrganization{name='" + name + "', head=" + head
-            + ", members=" + members.size() + "}";
+        return "StudentOrganization[name=" + name
+                + ", head=" + (head != null ? head.getFullName() : "none")
+                + ", members=" + members.size() + "]";
     }
 }

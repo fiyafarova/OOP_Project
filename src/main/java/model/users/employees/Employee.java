@@ -1,12 +1,15 @@
 package model.users.employees;
 
 import enums.School;
+import model.communication.Message;
 import model.users.User;
 
-// абстрактный класс для всех сотрудников универа
-// Employee может отправить сообщение любому другому Employee
+import java.io.Serializable;
+import java.util.Objects;
 
-public abstract class Employee extends User {
+public abstract class Employee extends User implements Serializable {
+    private static final long serialVersionUID = 1L;
+
     private double salary;
     private String department;
     private String position;
@@ -19,7 +22,8 @@ public abstract class Employee extends User {
     }
 
     public void sendMessage(Employee receiver, String text) {
-        // создать новый Message и сохранить/вывести
+        Message message = new Message(this, receiver, text);
+        System.out.println("[Message] " + getFirstName() + " → " + receiver.getFirstName() + ": " + text);
     }
 
     public double getSalary() {
@@ -27,6 +31,7 @@ public abstract class Employee extends User {
     }
 
     public void setSalary(double salary) {
+        this.salary = salary;
     }
 
     public String getDepartment() {
@@ -34,6 +39,7 @@ public abstract class Employee extends User {
     }
 
     public void setDepartment(String department) {
+        this.department = department;
     }
 
     public String getPosition() {
@@ -41,10 +47,15 @@ public abstract class Employee extends User {
     }
 
     public void setPosition(String position) {
+        this.position = position;
     }
 
     public double getRating() {
         return rating;
+    }
+
+    public void setRating(double rating) {
+        this.rating = rating;
     }
 
     public School getSchool() {
@@ -52,20 +63,22 @@ public abstract class Employee extends User {
     }
 
     public void setSchool(School school) {
+        this.school = school;
     }
 
     @Override
     public String toString() {
-        return null;
+        return "Employee[name=" + getFirstName() + " " + getLastName()
+                + ", position=" + position + ", school=" + school + "]";
     }
 
     @Override
     public boolean equals(Object o) {
-        return false;
+        return super.equals(o);
     }
 
     @Override
     public int hashCode() {
-        return 0;
+        return super.hashCode();
     }
 }
