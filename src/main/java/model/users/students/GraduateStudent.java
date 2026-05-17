@@ -11,6 +11,8 @@ import java.util.List;
 import java.util.Objects;
 
 public class GraduateStudent extends Student {
+    private static final long serialVersionUID = 1L;
+
     private DegreeType degreeType;
     private ResearcherDecorator supervisor;
     private List<ResearchPaper> diplomaPapers;
@@ -27,7 +29,8 @@ public class GraduateStudent extends Student {
             throw new IllegalArgumentException("Supervisor cannot be null");
         }
         if (supervisor.calculateHIndex() < 3) {
-            throw new LowHIndexException("Supervisor h-index must be at least 3");
+            throw new LowHIndexException(
+                    "Supervisor h-index must be at least 3, but is: " + supervisor.calculateHIndex());
         }
         this.supervisor = supervisor;
     }
@@ -56,19 +59,17 @@ public class GraduateStudent extends Student {
 
     @Override
     public String toString() {
-        return "GraduateStudent{" +
-                "id='" + getId() + '\'' +
-                ", name='" + getFirstName() + " " + getLastName() + '\'' +
-                ", degreeType=" + degreeType +
-                ", diplomaPapers=" + diplomaPapers.size() +
-                '}';
+        return "GraduateStudent[name=" + getFullName()
+                + ", degree=" + degreeType
+                + ", school=" + getSchool()
+                + ", diplomaPapers=" + diplomaPapers.size() + "]";
     }
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof GraduateStudent that)) return false;
-        return Objects.equals(getId(), that.getId());
+        if (!(o instanceof GraduateStudent)) return false;
+        return Objects.equals(getId(), ((GraduateStudent) o).getId());
     }
 
     @Override

@@ -6,22 +6,17 @@ import java.io.Serializable;
 import java.util.Objects;
 import java.util.UUID;
 
-// аутентификация обязательна
-// любой пользователь должен залогиниться
-
 public abstract class User implements Serializable {
+    private static final long serialVersionUID = 1L;
+
     private String id;
     private String firstName;
     private String lastName;
     private String login;
-    private String passwordHash;   // пароль хранится в хэшированном виде
-    private Language language;     // текущий язык интерфейса
+    private String passwordHash;
+    private Language language;
 
     public User(String firstName, String lastName, String login, String password) {
-        // сгенерировать id
-        // установить firstName, lastName, login
-        // хэшировать пароль и сохранить в passwordHash
-        // установить дефолтный язык EN
         this.id = UUID.randomUUID().toString();
         this.firstName = firstName;
         this.lastName = lastName;
@@ -31,18 +26,20 @@ public abstract class User implements Serializable {
     }
 
     public boolean login(String login, String password) {
-        //  проверить совпадение логина и хэша пароля
-        return false;
+        return this.login.equals(login)
+                && this.passwordHash.equals(String.valueOf(password.hashCode()));
     }
 
     public void logout() {
+        System.out.println("User " + firstName + " " + lastName + " logged out.");
     }
 
     public void switchLanguage(Language lang) {
+        this.language = lang;
     }
 
     public Language getLanguage() {
-        return null;
+        return language;
     }
 
     public String getId() {
@@ -53,32 +50,45 @@ public abstract class User implements Serializable {
         return firstName;
     }
 
+    public void setFirstName(String firstName) {
+        this.firstName = firstName;
+    }
+
     public String getLastName() {
         return lastName;
+    }
+
+    public void setLastName(String lastName) {
+        this.lastName = lastName;
     }
 
     public String getLogin() {
         return login;
     }
 
-    public void setFirstName(String firstName) {
+    public void setLogin(String login) {
+        this.login = login;
     }
 
-    public void setLastName(String lastName) {
+    public String getFullName() {
+        return firstName + " " + lastName;
     }
 
     @Override
     public String toString() {
-        return null;
+        return "User[id=" + id + ", name=" + firstName + " " + lastName + ", login=" + login + "]";
     }
 
     @Override
     public boolean equals(Object o) {
-        return false;
+        if (this == o) return true;
+        if (!(o instanceof User)) return false;
+        User other = (User) o;
+        return Objects.equals(this.id, other.id);
     }
 
     @Override
     public int hashCode() {
-        return 0;
+        return Objects.hash(id);
     }
 }

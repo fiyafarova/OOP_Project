@@ -1,182 +1,285 @@
 package patterns;
 
+import enums.RequestStatus;
 import enums.School;
 import model.academic.Course;
+import model.academic.StudentOrganization;
 import model.communication.News;
 import model.communication.Request;
 import model.research.Journal;
 import model.research.ResearchPaper;
 import model.research.ResearcherDecorator;
-import model.users.students.Student;
 import model.users.User;
+import model.users.students.Student;
 import model.users.employees.Teacher;
 
 import java.io.*;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class DataStorage implements Serializable {
-    // singleton
-    private static DataStorage instance;
+    private static final long serialVersionUID = 1L;
 
+    private static DataStorage instance;
 
     private List<User> users;
     private List<Course> courses;
     private List<News> news;
     private List<Journal> journals;
-    //private List<Request> requests;
+    private List<Request> requests;
     private List<ResearcherDecorator> researchers;
-    private List<String> logs; // лог действий пользователей
+    private List<StudentOrganization> organizations;
+    private List<String> logs;
 
     private DataStorage() {
-        // инициализировать все списки как новые ArrayList
+        users = new ArrayList<>();
+        courses = new ArrayList<>();
+        news = new ArrayList<>();
+        journals = new ArrayList<>();
+        requests = new ArrayList<>();
+        researchers = new ArrayList<>();
+        organizations = new ArrayList<>();
+        logs = new ArrayList<>();
     }
 
     public static DataStorage getInstance() {
-        //  если instance == null, создать новый DataStorage
-        return null;
+        if (instance == null) {
+            instance = new DataStorage();
+        }
+        return instance;
     }
 
-    // сериализация
+    //Serialization
+
     public void save(String filename) {
+        try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(filename))) {
+            oos.writeObject(this);
+            System.out.println("Data saved to " + filename);
+        } catch (IOException e) {
+            System.out.println("Failed to save data: " + e.getMessage());
+        }
     }
 
     public static DataStorage load(String filename) {
-        // десериализовать DataStorage из файла filename
-        return null;
+        try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(filename))) {
+            instance = (DataStorage) ois.readObject();
+            System.out.println("Data loaded from " + filename);
+            return instance;
+        } catch (IOException | ClassNotFoundException e) {
+            System.out.println("Could not load data, starting fresh. (" + e.getMessage() + ")");
+            return getInstance();
+        }
     }
 
+    // Users
+
     public void addUser(User user) {
+        if (user != null && getUserById(user.getId()) == null) {
+            users.add(user);
+        }
     }
 
     public void removeUser(String userId) {
-        // найти пользователя по id и удалить
+        users.removeIf(u -> u.getId().equals(userId));
     }
 
     public User getUserById(String id) {
-        return null;
+        return users.stream()
+                .filter(u -> u.getId().equals(id))
+                .findFirst().orElse(null);
     }
 
     public User getUserByLogin(String login) {
-        return null;
+        return users.stream()
+                .filter(u -> u.getLogin().equals(login))
+                .findFirst().orElse(null);
     }
 
     public List<User> getAllUsers() {
-        return null;
+        return users;
     }
 
     public List<Student> getAllStudents() {
-        // отфильтровать users по типу Student
-        return null;
+        return users.stream()
+                .filter(u -> u instanceof Student)
+                .map(u -> (Student) u)
+                .collect(Collectors.toList());
     }
 
     public List<Teacher> getAllTeachers() {
-        //  отфильтровать users по типу Teacher
-        return null;
+        return users.stream()
+                .filter(u -> u instanceof Teacher)
+                .map(u -> (Teacher) u)
+                .collect(Collectors.toList());
     }
 
     public List<Student> getStudentsBySchool(School school) {
-        return null;
+        return getAllStudents().stream()
+                .filter(s -> s.getSchool() == school)
+                .collect(Collectors.toList());
     }
 
     public List<Teacher> getTeachersBySchool(School school) {
-        return null;
+        return getAllTeachers().stream()
+                .filter(t -> t.getSchool() == school)
+                .collect(Collectors.toList());
     }
 
+    public List<User> getAllEmployees() {
+        return users.stream()
+                .filter(u -> u instanceof model.users.employees.Employee)
+                .collect(Collectors.toList());
+    }
 
+    // Courses
     public void addCourse(Course course) {
+        if (course != null && getCourseByCode(course.getCode()) == null) {
+            courses.add(course);
+        }
     }
 
     public void removeCourse(String courseCode) {
+        courses.removeIf(c -> c.getCode().equals(courseCode));
     }
 
     public Course getCourseByCode(String code) {
-        return null;
+        return courses.stream()
+                .filter(c -> c.getCode().equals(code))
+                .findFirst().orElse(null);
     }
 
     public List<Course> getAllCourses() {
-        return null;
+        return courses;
     }
 
     public List<Course> getCoursesBySchool(School school) {
-        return null;
+        return courses.stream()
+                .filter(c -> c.getSchool() == school)
+                .collect(Collectors.toList());
     }
 
     public List<Course> getAvailableCoursesFor(Student student) {
-        //  использовать course.isAvailableFor(student)
-        return null;
+        return courses.stream()
+                .filter(c -> c.isAvailableFor(student))
+                .collect(Collectors.toList());
     }
 
-    public void addNews(News news) {
+    //News
+
+    public void addNews(News n) {
+        if (n != null) news.add(n);
     }
 
     public void removeNews(String newsId) {
+        news.removeIf(n -> n.getId().equals(newsId));
     }
 
     public List<News> getAllNews() {
-        return null;
+        return news;
     }
 
     public List<News> getSortedNews() {
-        // RESEARCH новости идут первыми (isPinned = true)
-        return null;
+        return news.stream()
+                .sorted((a, b) -> Boolean.compare(b.isPinned(), a.isPinned()))
+                .collect(Collectors.toList());
     }
 
+    // Journals
 
     public void addJournal(Journal journal) {
-        //
+        if (journal != null && !journals.contains(journal)) {
+            journals.add(journal);
+        }
     }
 
     public Journal getJournalByName(String name) {
-        return null;
+        return journals.stream()
+                .filter(j -> j.getName().equals(name))
+                .findFirst().orElse(null);
     }
 
     public List<Journal> getAllJournals() {
-        return null;
+        return journals;
     }
 
+    //Requests
 
     public void addRequest(Request request) {
+        if (request != null) requests.add(request);
     }
 
     public List<Request> getAllRequests() {
-        return null;
+        return requests;
     }
 
     public List<Request> getNewRequests() {
-        // отфильтровать по RequestStatus.NEW
-        return null;
+        return requests.stream()
+                .filter(r -> r.getStatus() == RequestStatus.NEW)
+                .collect(Collectors.toList());
     }
 
+    // Researchers
+
     public void addResearcher(ResearcherDecorator researcher) {
+        if (researcher != null && !researchers.contains(researcher)) {
+            researchers.add(researcher);
+        }
     }
 
     public List<ResearcherDecorator> getAllResearchers() {
-        return null;
+        return researchers;
     }
 
     public ResearcherDecorator getTopCitedResearcher() {
-        // найти исследователя с максимальным h-index
-        return null;
+        return researchers.stream()
+                .max(Comparator.comparingInt(ResearcherDecorator::calculateHIndex))
+                .orElse(null);
     }
 
     public List<ResearcherDecorator> getTopCitedBySchool(School school) {
-        return null;
+        return researchers.stream()
+                .sorted(Comparator.comparingInt(ResearcherDecorator::calculateHIndex).reversed())
+                .collect(Collectors.toList());
     }
 
     public void printAllPapers(Comparator<ResearchPaper> comparator) {
-        // собрать все статьи со всех исследователей, отсортировать и вывести
+        researchers.stream()
+                .flatMap(r -> r.getPapers().stream())
+                .distinct()
+                .sorted(comparator)
+                .forEach(System.out::println);
     }
 
-    public void addLog(String logEntry) {
+    // Organizations
+
+    public void addOrganization(StudentOrganization org) {
+        if (org != null && !organizations.contains(org)) {
+            organizations.add(org);
+        }
+    }
+
+    public List<StudentOrganization> getAllOrganizations() {
+        return organizations;
+    }
+
+    // Logs
+
+    public void addLog(String entry) {
+        logs.add(LocalDateTime.now() + ": " + entry);
     }
 
     public List<String> getLogs() {
-        return null;
+        return logs;
     }
 
     @Override
     public String toString() {
-        return null;
+        return "DataStorage[users=" + users.size()
+                + ", courses=" + courses.size()
+                + ", news=" + news.size()
+                + ", requests=" + requests.size() + "]";
     }
 }

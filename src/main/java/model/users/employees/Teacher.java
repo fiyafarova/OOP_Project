@@ -5,21 +5,21 @@ import enums.TeacherPosition;
 import enums.UrgencyLevel;
 import model.academic.Course;
 import model.academic.Mark;
+import model.communication.Request;
 import model.users.students.Student;
+import patterns.DataStorage;
 
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 
-// преподаватель
-// может быть Researcher (через TeacherResearcher декоратор)
-// PROFESSOR автоматически является Researcher
-// может вести лекции и/или практики по курсу
-
 public class Teacher extends Employee {
+    private static final long serialVersionUID = 1L;
+
     private List<Course> courses;
     private TeacherPosition teacherPosition;
-    private double rating; // средняя оценка от студентов
+    private double rating;
+    private int ratingCount;
 
     public Teacher(String firstName, String lastName, String login,
                    String password, School school, TeacherPosition teacherPosition) {
@@ -29,68 +29,87 @@ public class Teacher extends Employee {
     }
 
     public void viewCourses() {
-        // вывести все курсы
-    }
-
-    public void manageCourse(Course course) {
-        //вывести информацию о курсе для управления
+        if (courses.isEmpty()) {
+            System.out.println("No courses assigned.");
+            return;
+        }
+        courses.forEach(c -> {
+            System.out.println(c);
+            if (c.getLectureTeacher() != null)
+                System.out.println("   Lecture:  " + c.getLectureTeacher().getFullName());
+            if (c.getPracticeTeacher() != null)
+                System.out.println("   Practice: " + c.getPracticeTeacher().getFullName());
+        });
     }
 
     public void addCourse(Course course) {
+        if (!courses.contains(course)) {
+            courses.add(course);
+        }
     }
 
     public void removeCourse(Course course) {
+        courses.remove(course);
     }
 
     public void putMark(Student student, Course course, Mark mark) {
-        // добавить оценку студенту
-    }
-
-    public void viewStudents() {
-        // вывести всех студентов со всех своих курсов
+        student.addMark(course, mark);
+        DataStorage.getInstance().addLog(
+                "Teacher " + getFullName() + " put mark " + mark.getLetterGrade()
+                        + " for " + student.getFullName() + " in " + course.getName());
     }
 
     public void viewStudents(Comparator<Student> comparator) {
-        // вывести студентов, отсортированных по comparator
+        courses.stream()
+                .flatMap(c -> c.getEnrolledStudents().stream())
+                .distinct()
+                .sorted(comparator)
+                .forEach(System.out::println);
     }
 
-    // отправляет жалобу декану
+
+    public void sendComplaint(Student student, Manager dean, UrgencyLevel urgency, String description) {
+        String desc = "[Complaint from " + getFullName()
+                + " about student " + student.getFullName() + "] " + description;
+        Request request = new Request(this, desc, urgency);
+        DataStorage.getInstance().addRequest(request);
+        DataStorage.getInstance().addLog("Teacher " + getFullName()
+                + " sent complaint about " + student.getFullName()
+                + " with urgency " + urgency);
+        if (dean != null) {
+            sendMessage(dean, "Complaint filed. Request ID: " + request.getId()
+                    + ". Urgency: " + urgency + ". " + description);
+        }
+        System.out.println("Complaint sent. Request ID: " + request.getId());
+    }
+
     public void sendComplaint(Student student, Manager dean, UrgencyLevel urgency) {
-        // создать Request или Message с жалобой на студента
+        sendComplaint(student, dean, urgency, "");
     }
 
-    public List<Course> getCourses() {
-        return courses;
-    }
+    public List<Course> getCourses() { return courses; }
 
-    public TeacherPosition getTeacherPosition() {
-        return teacherPosition;
-    }
-
-    public void setTeacherPosition(TeacherPosition position) {
-    }
+    public TeacherPosition getTeacherPosition() { return teacherPosition; }
+    public void setTeacherPosition(TeacherPosition position) { this.teacherPosition = position; }
 
     @Override
-    public double getRating() {
-        return rating;
-    }
+    public double getRating() { return rating; }
 
     public void updateRating(int newRating) {
-        //  обновить средний рейтинг
+        rating = (rating * ratingCount + newRating) / (++ratingCount);
     }
 
     @Override
     public String toString() {
-        return null;
+        return "Teacher[name=" + getFullName()
+                + ", position=" + teacherPosition
+                + ", school=" + getSchool()
+                + ", rating=" + String.format("%.1f", rating) + "]";
     }
 
     @Override
-    public boolean equals(Object o) {
-        return false;
-    }
+    public boolean equals(Object o) { return super.equals(o); }
 
     @Override
-    public int hashCode() {
-        return 0;
-    }
+    public int hashCode() { return super.hashCode(); }
 }

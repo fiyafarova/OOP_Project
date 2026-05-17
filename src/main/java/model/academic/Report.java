@@ -1,6 +1,6 @@
 package model.academic;
 
-import model.users.Student;
+import model.users.students.Student;
 
 import java.io.Serializable;
 import java.util.HashMap;
@@ -24,26 +24,27 @@ public class Report implements Serializable {
     public void generate(List<Student> students, List<Course> courses) {
         totalStudents = students.size();
         failingStudents = (int) students.stream()
-            .filter(s -> s.getGpa() < 2.0)
-            .count();
+                .filter(s -> s.getGpa() < 2.0)
+                .count();
         universityAverageGpa = students.stream()
-            .mapToDouble(Student::getGpa)
-            .average()
-            .orElse(0.0);
+                .mapToDouble(Student::getGpa)
+                .average()
+                .orElse(0.0);
 
         averageGradesByCourse = new HashMap<>();
         for (Course course : courses) {
             double avg = course.getEnrolledStudents().stream()
-                .map(s -> s.getMarkForCourse(course))
-                .filter(m -> m != null)
-                .mapToDouble(Mark::getTotalScore)
-                .average()
-                .orElse(0.0);
+                    .map(s -> s.getMarkForCourse(course))
+                    .filter(m -> m != null)
+                    .mapToDouble(Mark::getTotalScore)
+                    .average()
+                    .orElse(0.0);
             averageGradesByCourse.put(course, avg);
         }
     }
 
     public void print() {
+        System.out.println("============================================================");
         System.out.println("  REPORT: " + title);
         System.out.println("------------------------------------------------------------");
         System.out.println("  Total students    : " + totalStudents);
@@ -52,8 +53,13 @@ public class Report implements Serializable {
         System.out.println("------------------------------------------------------------");
         System.out.printf("  %-35s %s%n", "Course", "Avg Score");
         System.out.println("------------------------------------------------------------");
-        averageGradesByCourse.forEach((course, avg) ->
-            System.out.printf("  %-35s %.1f%n", course.getName(), avg));
+        if (averageGradesByCourse.isEmpty()) {
+            System.out.println("  No course data available.");
+        } else {
+            averageGradesByCourse.forEach((course, avg) ->
+                    System.out.printf("  %-35s %.1f%n", course.getName(), avg));
+        }
+        System.out.println("============================================================");
     }
 
     public String getTitle() { return title; }
