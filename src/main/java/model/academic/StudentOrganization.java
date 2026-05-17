@@ -1,6 +1,6 @@
 package model.academic;
 
-import model.users.students.Student;
+import model.users.Student;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -10,16 +10,15 @@ public class StudentOrganization implements Serializable {
     private static final long serialVersionUID = 1L;
 
     private String name;
-    private Student head;
     private List<Student> members;
+    private Student head;
 
     public StudentOrganization() {
         this.members = new ArrayList<>();
     }
 
-    public StudentOrganization(String name, Student head) {
+    public StudentOrganization(String name) {
         this.name = name;
-        this.head = head;
         this.members = new ArrayList<>();
     }
 
@@ -33,33 +32,24 @@ public class StudentOrganization implements Serializable {
         members.remove(student);
     }
 
-    public String getName() {
-        return name;
+    public void setHead(Student student) {
+        if (!members.contains(student)) {
+            members.add(student);
+        }
+        this.head = student;
     }
 
-    public void setName(String name) {
-        this.name = name;
-    }
+    public String getName() { return name; }
+    public void setName(String name) { this.name = name; }
 
-    public Student getHead() {
-        return head;
-    }
+    public List<Student> getMembers() { return members; }
+    public void setMembers(List<Student> members) { this.members = members; }
 
-    public void setHead(Student head) {
-        this.head = head;
-    }
-
-    public List<Student> getMembers() {
-        return members;
-    }
-
-    public void setMembers(List<Student> members) {
-        this.members = members;
-    }
+    public Student getHead() { return head; }
 
     @Override
     public String toString() {
-        return "StudentOrganization{name='" + name + "', head=" + head +
-                ", members=" + members.size() + "}";
+        return "StudentOrganization{name='" + name + "', head=" + head
+            + ", members=" + members.size() + "}";
     }
 }

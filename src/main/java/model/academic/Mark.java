@@ -1,84 +1,102 @@
 package model.academic;
 
 import java.io.Serializable;
+import java.util.Objects;
 
 public class Mark implements Serializable {
     private static final long serialVersionUID = 1L;
 
-    private double attestation1;  // max 30
-    private double attestation2;  // max 30
-    private double finalExam;     // max 40
-    private double totalScore;
+    private double att1;
+    private double att2;
+    private double finalExam;
 
-    public Mark() {
-    }
+    public Mark() {}
 
-    public Mark(double attestation1, double attestation2, double finalExam) {
-        this.attestation1 = attestation1;
-        this.attestation2 = attestation2;
+    public Mark(double att1, double att2, double finalExam) {
+        this.att1 = att1;
+        this.att2 = att2;
         this.finalExam = finalExam;
-        this.totalScore = attestation1 + attestation2 + finalExam;
-    }
-
-    public double getGpaPoints() {
-        if (totalScore >= 90) return 4.0;
-        if (totalScore >= 80) return 3.0;
-        if (totalScore >= 70) return 2.0;
-        if (totalScore >= 60) return 1.0;
-        return 0.0;
-    }
-
-    public String getLetterGrade() {
-        if (totalScore >= 90) return "A";
-        if (totalScore >= 80) return "B";
-        if (totalScore >= 70) return "C";
-        if (totalScore >= 60) return "D";
-        return "F";
-    }
-
-    public boolean isPassed() {
-        return totalScore >= 50;
-    }
-
-    public double getAttestation1() {
-        return attestation1;
-    }
-
-    public void setAttestation1(double attestation1) {
-        this.attestation1 = attestation1;
-        recalculate();
-    }
-
-    public double getAttestation2() {
-        return attestation2;
-    }
-
-    public void setAttestation2(double attestation2) {
-        this.attestation2 = attestation2;
-        recalculate();
-    }
-
-    public double getFinalExam() {
-        return finalExam;
-    }
-
-    public void setFinalExam(double finalExam) {
-        this.finalExam = finalExam;
-        recalculate();
     }
 
     public double getTotalScore() {
-        return totalScore;
+        return att1 + att2 + finalExam;
     }
 
-    private void recalculate() {
-        this.totalScore = this.attestation1 + this.attestation2 + this.finalExam;
+    public boolean isFX() {
+        return finalExam >= 10 && finalExam < 20;
+    }
+
+    public boolean isF() {
+        return getTotalScore() < 50 && !isFX();
+    }
+
+    public boolean isPassed() {
+        return getTotalScore() >= 50 && finalExam >= 20;
+    }
+
+    public boolean isRetakable() {
+        return isFX();
+    }
+
+    public String getLetterGrade() {
+        if (isFX()) return "FX";
+        if (!isPassed()) return "F";
+        double total = getTotalScore();
+        if (total >= 95) return "A";
+        if (total >= 90) return "A-";
+        if (total >= 85) return "B+";
+        if (total >= 80) return "B";
+        if (total >= 75) return "B-";
+        if (total >= 70) return "C+";
+        if (total >= 65) return "C";
+        if (total >= 60) return "C-";
+        if (total >= 55) return "D+";
+        return "D";
+    }
+
+    public double getGpaPoints() {
+        switch (getLetterGrade()) {
+            case "A":   return 4.0;
+            case "A-":  return 3.67;
+            case "B+":  return 3.33;
+            case "B":   return 3.0;
+            case "B-":  return 2.67;
+            case "C+":  return 2.33;
+            case "C":   return 2.0;
+            case "C-":  return 1.67;
+            case "D+":  return 1.33;
+            case "D":   return 1.0;
+            default:    return 0.0;
+        }
+    }
+
+    public double getAtt1() { return att1; }
+    public void setAtt1(double att1) { this.att1 = att1; }
+
+    public double getAtt2() { return att2; }
+    public void setAtt2(double att2) { this.att2 = att2; }
+
+    public double getFinalExam() { return finalExam; }
+    public void setFinalExam(double finalExam) { this.finalExam = finalExam; }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Mark)) return false;
+        Mark mark = (Mark) o;
+        return Double.compare(mark.att1, att1) == 0
+            && Double.compare(mark.att2, att2) == 0
+            && Double.compare(mark.finalExam, finalExam) == 0;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(att1, att2, finalExam);
     }
 
     @Override
     public String toString() {
-        return "Mark{att1=" + attestation1 + ", att2=" + attestation2 +
-                ", final=" + finalExam + ", total=" + totalScore +
-                ", grade=" + getLetterGrade() + "}";
+        return "Mark[att1=" + att1 + ", att2=" + att2 + ", final=" + finalExam
+            + ", total=" + getTotalScore() + ", grade=" + getLetterGrade() + "]";
     }
 }

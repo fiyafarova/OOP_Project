@@ -1,64 +1,66 @@
 package model.academic;
 
-import java.time.LocalDate;
+import model.users.Student;
+
+import java.io.Serializable;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-// статистика по оценкам
-// генерируется Manager
+public class Report implements Serializable {
+    private static final long serialVersionUID = 1L;
 
-public class Report {
     private String title;
-    private LocalDate createdAt;
-    private Map<Course, Double> averageGradesByCourse;
-    private double universityAverageGpa;
     private int totalStudents;
     private int failingStudents;
+    private double universityAverageGpa;
+    private Map<Course, Double> averageGradesByCourse;
 
     public Report(String title) {
-        // установить title
-        // createdAt = LocalDate.now()
+        this.title = title;
+        this.averageGradesByCourse = new HashMap<>();
     }
 
-    public void generate(List students, List courses) {
-        // пройтись по всем студентам и курсам
-        //  вычислить для каждого курса средний балл
-        // вычислить среднее GPA всех студентов
-        // заполнить totalStudents и failingStudents (GPA < 2.0 считается failing)
+    public void generate(List<Student> students, List<Course> courses) {
+        totalStudents = students.size();
+        failingStudents = (int) students.stream()
+            .filter(s -> s.getGpa() < 2.0)
+            .count();
+        universityAverageGpa = students.stream()
+            .mapToDouble(Student::getGpa)
+            .average()
+            .orElse(0.0);
+
+        averageGradesByCourse = new HashMap<>();
+        for (Course course : courses) {
+            double avg = course.getEnrolledStudents().stream()
+                .map(s -> s.getMarkForCourse(course))
+                .filter(m -> m != null)
+                .mapToDouble(Mark::getTotalScore)
+                .average()
+                .orElse(0.0);
+            averageGradesByCourse.put(course, avg);
+        }
     }
 
     public void print() {
-        // вывести заголовок, дату, средний GPA университета
-        // вывести таблицу - курс - средний балл
-        // вывести totalStudents и failingStudents
+        System.out.println("  REPORT: " + title);
+        System.out.println("------------------------------------------------------------");
+        System.out.println("  Total students    : " + totalStudents);
+        System.out.println("  Failing students  : " + failingStudents);
+        System.out.printf( "  University avg GPA: %.2f%n", universityAverageGpa);
+        System.out.println("------------------------------------------------------------");
+        System.out.printf("  %-35s %s%n", "Course", "Avg Score");
+        System.out.println("------------------------------------------------------------");
+        averageGradesByCourse.forEach((course, avg) ->
+            System.out.printf("  %-35s %.1f%n", course.getName(), avg));
     }
 
-    public String getTitle() {
-        return title;
-    }
+    public String getTitle() { return title; }
+    public void setTitle(String title) { this.title = title; }
 
-    public LocalDate getCreatedAt() {
-        return createdAt;
-    }
-
-    public double getUniversityAverageGpa() {
-        return universityAverageGpa;
-    }
-
-    public Map<Course, Double> getAverageGradesByCourse() {
-        return averageGradesByCourse;
-    }
-
-    public int getTotalStudents() {
-        return totalStudents;
-    }
-
-    public int getFailingStudents() {
-        return failingStudents;
-    }
-
-    @Override
-    public String toString() {
-        return null;
-    }
+    public int getTotalStudents() { return totalStudents; }
+    public int getFailingStudents() { return failingStudents; }
+    public double getUniversityAverageGpa() { return universityAverageGpa; }
+    public Map<Course, Double> getAverageGradesByCourse() { return averageGradesByCourse; }
 }
