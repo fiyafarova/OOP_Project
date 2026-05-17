@@ -40,6 +40,12 @@ public class LanguageManager {
         // Language switch
         add("lang.switch_prompt", "Тілді таңдаңыз (KZ / EN / RU): ", "Choose language (KZ / EN / RU): ", "Выберите язык (KZ / EN / RU): ");
         add("lang.switched", "Тіл өзгертілді: ", "Language switched to: ", "Язык изменён на: ");
+        
+        // Main menu
+        add("menu.main.title", "\n=== НЕГІЗГІ МӘЗІР ===", "\n=== MAIN MENU ===", "\n=== ГЛАВНОЕ МЕНЮ ===");
+        add("menu.main.1", "Негізгі рөл мәзірі", "Open main role menu", "Открыть основное меню роли");
+        add("menu.main.2", "Жаңалықтар", "Open news", "Открыть новости");
+        add("menu.main.3", "Зерттеуші мәзірі", "Open researcher menu", "Открыть меню исследователя");
 
         //  Student menu
         add("menu.student.title", "\n=== СТУДЕНТ МӘЗІРІ ===", "\n=== STUDENT MENU ===", "\n=== МЕНЮ СТУДЕНТА ===");

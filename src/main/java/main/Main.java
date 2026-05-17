@@ -18,6 +18,7 @@ import model.users.students.GraduateStudent;
 import model.users.students.Student;
 import patterns.DataStorage;
 import patterns.UserFactory;
+import util.LanguageManager;
 
 import java.io.File;
 import java.time.LocalDate;
@@ -56,42 +57,32 @@ public class Main {
             }
 
             DataStorage.getInstance().addLog("User logged in: " + user.getLogin());
-            System.out.println("\nWelcome, " + user.getFullName() + "!");
+            System.out.println("\n" + LanguageManager.get(user.getLanguage(), "general.welcome") + user.getFullName() + "!");
 
             openMenu(user);
 
             DataStorage.getInstance().save(DATA_FILE);
 
-            System.out.print("\nLog in as another user? (y/n): ");
+            System.out.print("\n" + LanguageManager.get(user.getLanguage(), "login.another"));
             if (!scanner.nextLine().trim().equalsIgnoreCase("y")) {
                 break;
             }
         }
 
-        System.out.println("Goodbye!");
+        System.out.println(LanguageManager.get(Language.EN, "general.goodbye"));
     }
 
     private static void openMenu(User user) {
         while (true) {
+            Language lang = user.getLanguage();
+
             boolean isResearcher = DataStorage.getInstance()
                     .getAllResearchers()
                     .stream()
                     .anyMatch(r -> r.getWrapped().equals(user));
 
-            System.out.println("\n╔══════════════════════════════╗");
-            System.out.println("║          MAIN MENU           ║");
-            System.out.println("╚══════════════════════════════╝");
-            System.out.println("1. Open main role menu");
-            System.out.println("2. Open news");
-
-            if (isResearcher) {
-                System.out.println("3. Open researcher menu");
-                System.out.println("4. Logout");
-            } else {
-                System.out.println("3. Logout");
-            }
-
-            System.out.print("Choose option: ");
+            printMainMenu(lang, isResearcher);
+            LanguageManager.prompt(lang, "general.choose");
             String choice = scanner.nextLine().trim();
 
             if ("1".equals(choice)) {
@@ -105,9 +96,81 @@ public class Main {
                 user.logout();
                 return;
             } else {
-                System.out.println("Invalid choice.");
+                LanguageManager.print(lang, "general.invalid_choice");
             }
         }
+    }
+
+    private static void printMainMenu(Language lang, boolean isResearcher) {
+        System.out.println();
+        System.out.println("╔══════════════════════════════╗");
+        System.out.println("║" + centerText(getMainMenuTitle(lang), 30) + "║");
+        System.out.println("╚══════════════════════════════╝");
+
+        System.out.println("1. " + getMainRoleMenuLabel(lang));
+        System.out.println("2. " + getNewsMenuLabel(lang));
+
+        if (isResearcher) {
+            System.out.println("3. " + getResearcherMenuLabel(lang));
+            System.out.println("4. " + LanguageManager.get(lang, "general.logout"));
+        } else {
+            System.out.println("3. " + LanguageManager.get(lang, "general.logout"));
+        }
+    }
+
+    private static String getMainMenuTitle(Language lang) {
+        switch (lang) {
+            case KZ:
+                return "НЕГІЗГІ МӘЗІР";
+            case RU:
+                return "ГЛАВНОЕ МЕНЮ";
+            case EN:
+            default:
+                return "MAIN MENU";
+        }
+    }
+
+    private static String getMainRoleMenuLabel(Language lang) {
+        switch (lang) {
+            case KZ:
+                return "Негізгі рөл мәзірі";
+            case RU:
+                return "Основное меню роли";
+            case EN:
+            default:
+                return "Open main role menu";
+        }
+    }
+
+    private static String getNewsMenuLabel(Language lang) {
+        switch (lang) {
+            case KZ:
+                return "Жаңалықтар";
+            case RU:
+                return "Новости";
+            case EN:
+            default:
+                return "Open news";
+        }
+    }
+
+    private static String getResearcherMenuLabel(Language lang) {
+        switch (lang) {
+            case KZ:
+                return "Зерттеуші мәзірі";
+            case RU:
+                return "Меню исследователя";
+            case EN:
+            default:
+                return "Open researcher menu";
+        }
+    }
+
+    private static String centerText(String text, int width) {
+        if (text.length() >= width) return text;
+        int leftPadding = (width - text.length()) / 2;
+        int rightPadding = width - text.length() - leftPadding;
+        return " ".repeat(leftPadding) + text + " ".repeat(rightPadding);
     }
 
     private static void openRoleMenu(User user) {
@@ -130,9 +193,7 @@ public class Main {
     private static void createTestData() {
         DataStorage ds = DataStorage.getInstance();
 
-        // =========================
         // Admin
-        // =========================
         Map<String, String> adminData = new HashMap<>();
         adminData.put("firstName", "Sofia");
         adminData.put("lastName", "Admin");
@@ -141,9 +202,7 @@ public class Main {
         Admin admin = UserFactory.createAdmin(adminData);
         ds.addUser(admin);
 
-        // =========================
         // Manager
-        // =========================
         Map<String, String> mgrData = new HashMap<>();
         mgrData.put("firstName", "Almas");
         mgrData.put("lastName", "Manager");
@@ -152,9 +211,7 @@ public class Main {
         Manager manager = UserFactory.createManager(mgrData, School.SITE, ManagerType.OR);
         ds.addUser(manager);
 
-        // =========================
         // TechSupport
-        // =========================
         Map<String, String> tsData = new HashMap<>();
         tsData.put("firstName", "Amir");
         tsData.put("lastName", "Support");
@@ -163,9 +220,7 @@ public class Main {
         TechSupportSpecialist support = UserFactory.createTechSupport(tsData);
         ds.addUser(support);
 
-        // =========================
         // Teachers
-        // =========================
         Map<String, String> t1Data = new HashMap<>();
         t1Data.put("firstName", "John");
         t1Data.put("lastName", "Smith");
@@ -184,9 +239,7 @@ public class Main {
         Teacher teacher2 = UserFactory.createTeacher(t2Data, School.BS);
         ds.addUser(teacher2);
 
-        // =========================
         // Students
-        // =========================
         Map<String, String> s1Data = new HashMap<>();
         s1Data.put("firstName", "Bekzat");
         s1Data.put("lastName", "Akhmetov");
@@ -205,9 +258,7 @@ public class Main {
         Student student2 = UserFactory.createStudent(s2Data, School.BS);
         ds.addUser(student2);
 
-        // =========================
         // Graduate Student
-        // =========================
         GraduateStudent gradStudent = new GraduateStudent(
                 "Aruzhan",
                 "Researcher",
@@ -219,9 +270,7 @@ public class Main {
         );
         ds.addUser(gradStudent);
 
-        // =========================
         // Courses
-        // =========================
         Course c1 = new Course("CS101", "Introduction to Programming", 5, School.SITE, CourseType.MAJOR);
         Course c2 = new Course("MATH101", "Calculus", 5, School.BS, CourseType.MAJOR);
         Course c3 = new Course("ENG101", "Academic English", 3, School.SSH, CourseType.FREE_ELECTIVE);
@@ -236,34 +285,26 @@ public class Main {
         ds.addCourse(c2);
         ds.addCourse(c3);
 
-        // =========================
         // Student Organizations
-        // =========================
         StudentOrganization org1 = new StudentOrganization("ACM Student Chapter");
         StudentOrganization org2 = new StudentOrganization("Debate Club");
         ds.addOrganization(org1);
         ds.addOrganization(org2);
 
-        // =========================
         // Journals
-        // =========================
         Journal j1 = new Journal("KBTU Research Journal");
         Journal j2 = new Journal("Science Bulletin");
         ds.addJournal(j1);
         ds.addJournal(j2);
 
-        // =========================
         // Researchers
-        // =========================
         TeacherResearcher teacherResearcher = new TeacherResearcher(teacher2);
         StudentResearcher studentResearcher = new StudentResearcher(gradStudent);
 
         ds.addResearcher(teacherResearcher);
         ds.addResearcher(studentResearcher);
 
-        // =========================
-        // Research papers for professor (to make h-index >= 3)
-        // =========================
+        // Research papers for professor
         ResearchPaper p1 = new ResearchPaper(
                 "Machine Learning in Education",
                 "KBTU Research Journal",
@@ -294,7 +335,6 @@ public class Main {
         p3.setCitations(4);
         teacherResearcher.addPaper(p3);
 
-        // Graduate student's diploma paper
         ResearchPaper p4 = new ResearchPaper(
                 "Educational Recommendation Systems",
                 "KBTU Research Journal",
@@ -306,22 +346,18 @@ public class Main {
         studentResearcher.addPaper(p4);
         gradStudent.addDiplomaPaper(p4);
 
-        // Set supervisor
         try {
             gradStudent.setSupervisor(teacherResearcher);
         } catch (Exception e) {
             System.out.println("Could not assign supervisor: " + e.getMessage());
         }
 
-        // Journal subscribers
         j1.subscribe(student1);
         j1.subscribe(student2);
         j1.subscribe(teacher1);
 
-        // Publish one paper to journal -> observer + news
         teacherResearcher.publishPaperToJournal(p1, j1);
 
-        // General news
         ds.addNews(new News(
                 "Welcome to the University System",
                 "System initialized successfully with demo data.",

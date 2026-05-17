@@ -1,5 +1,6 @@
 package menu;
 
+import enums.Language;
 import model.research.Journal;
 import model.research.PaperComparators;
 import model.research.ResearchPaper;
@@ -7,12 +8,17 @@ import model.research.ResearchProject;
 import model.research.ResearcherDecorator;
 import model.users.User;
 import patterns.DataStorage;
+import util.LanguageManager;
 
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Scanner;
 
 public class ResearcherMenu {
+
+    private static Language lang(User user) {
+        return user.getLanguage();
+    }
 
     public static void open(User user, Scanner sc) {
         ResearcherDecorator researcher = DataStorage.getInstance()
@@ -28,25 +34,26 @@ public class ResearcherMenu {
         }
 
         while (true) {
-            System.out.println("\n=== RESEARCHER MENU ===");
-            System.out.println("1. Add research paper");
-            System.out.println("2. View my papers");
-            System.out.println("3. Create research project");
-            System.out.println("4. Add participant to project");
-            System.out.println("5. View my projects");
-            System.out.println("6. Subscribe to journal");
-            System.out.println("7. Publish paper to journal");
-            System.out.println("8. View top cited researcher");
-            System.out.println("9. Logout");
+            LanguageManager.print(lang(user), "menu.researcher.title");
+            System.out.println("1. " + LanguageManager.get(lang(user), "menu.researcher.1"));
+            System.out.println("2. " + LanguageManager.get(lang(user), "menu.researcher.2"));
+            System.out.println("3. " + LanguageManager.get(lang(user), "menu.researcher.3"));
+            System.out.println("4. " + LanguageManager.get(lang(user), "menu.researcher.4"));
+            System.out.println("5. " + LanguageManager.get(lang(user), "menu.researcher.5"));
+            System.out.println("6. " + LanguageManager.get(lang(user), "menu.researcher.6"));
+            System.out.println("7. " + LanguageManager.get(lang(user), "menu.researcher.7"));
+            System.out.println("8. " + LanguageManager.get(lang(user), "menu.researcher.8"));
+            System.out.println("9. " + LanguageManager.get(lang(user), "menu.researcher.9"));
+            LanguageManager.prompt(lang(user), "general.choose");
 
-            String input = sc.nextLine();
+            String input = sc.nextLine().trim();
 
             switch (input) {
                 case "1":
                     addResearchPaper(researcher, sc);
                     break;
                 case "2":
-                    viewMyPapers(researcher, sc);
+                    viewMyPapers(researcher, sc, user);
                     break;
                 case "3":
                     createProject(researcher, sc);
@@ -55,7 +62,7 @@ public class ResearcherMenu {
                     addParticipantToProject(researcher, sc);
                     break;
                 case "5":
-                    viewMyProjects(researcher);
+                    viewMyProjects(researcher, user);
                     break;
                 case "6":
                     subscribeToJournal(researcher, sc);
@@ -64,12 +71,12 @@ public class ResearcherMenu {
                     publishPaperToJournal(researcher, sc);
                     break;
                 case "8":
-                    viewTopCitedResearcher();
+                    viewTopCitedResearcher(user);
                     break;
                 case "9":
                     return;
                 default:
-                    System.out.println("Invalid choice");
+                    LanguageManager.print(lang(user), "general.invalid_choice");
             }
         }
     }
@@ -97,12 +104,12 @@ public class ResearcherMenu {
         System.out.println("Paper added.");
     }
 
-    private static void viewMyPapers(ResearcherDecorator researcher, Scanner sc) {
-        System.out.println("Sort by:");
+    private static void viewMyPapers(ResearcherDecorator researcher, Scanner sc, User user) {
         System.out.println("1. Citations");
         System.out.println("2. Date");
         System.out.println("3. Pages");
-        String choice = sc.nextLine();
+        LanguageManager.prompt(lang(user), "general.choose");
+        String choice = sc.nextLine().trim();
 
         switch (choice) {
             case "1":
@@ -115,7 +122,7 @@ public class ResearcherMenu {
                 researcher.printPapers(PaperComparators.byPages());
                 break;
             default:
-                System.out.println("Invalid choice");
+                LanguageManager.print(lang(user), "general.invalid_choice");
         }
     }
 
@@ -171,9 +178,9 @@ public class ResearcherMenu {
         }
     }
 
-    private static void viewMyProjects(ResearcherDecorator researcher) {
+    private static void viewMyProjects(ResearcherDecorator researcher, User user) {
         if (researcher.getProjects().isEmpty()) {
-            System.out.println("No projects.");
+            LanguageManager.print(lang(user), "general.no_data");
             return;
         }
 
@@ -232,10 +239,10 @@ public class ResearcherMenu {
         System.out.println("Paper published to journal.");
     }
 
-    private static void viewTopCitedResearcher() {
+    private static void viewTopCitedResearcher(User user) {
         ResearcherDecorator top = DataStorage.getInstance().getTopCitedResearcher();
         if (top == null) {
-            System.out.println("No researchers found.");
+            LanguageManager.print(lang(user), "general.no_data");
             return;
         }
 
