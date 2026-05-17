@@ -3,63 +3,34 @@ package model.communication;
 import model.users.User;
 
 import java.io.Serializable;
-import java.time.LocalDateTime;
-import java.util.Objects;
-import java.util.UUID;
+import java.time.LocalDate;
 
 public class Comment implements Serializable {
-    private final String id;
+    private User author;
     private String text;
-    private final User author;
-    private final LocalDateTime createdAt;
+    private LocalDate createdAt;
 
     public Comment(User author, String text) {
-        this.id = UUID.randomUUID().toString();
         this.author = author;
         this.text = text;
-        this.createdAt = LocalDateTime.now();
-    }
-
-    public String getId() {
-        return id;
-    }
-
-    public String getText() {
-        return text;
-    }
-
-    public void setText(String text) {
-        this.text = text;
+        this.createdAt = LocalDate.now();
     }
 
     public User getAuthor() {
         return author;
     }
 
-    public LocalDateTime getCreatedAt() {
+    public String getText() {
+        return text;
+    }
+
+    public LocalDate getCreatedAt() {
         return createdAt;
     }
 
     @Override
     public String toString() {
-        String authorName = author == null ? "Unknown" : author.getFirstName() + " " + author.getLastName();
-        return "Comment{" +
-                "id='" + id + '\'' +
-                ", text='" + text + '\'' +
-                ", author=" + authorName +
-                ", createdAt=" + createdAt +
-                '}';
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof Comment comment)) return false;
-        return Objects.equals(id, comment.id);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(id);
+        String name = author != null ? author.getFirstName() : "Unknown";
+        return "[" + name + "]: " + text + " (" + createdAt + ")";
     }
 }

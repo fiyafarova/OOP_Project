@@ -3,21 +3,16 @@ package model.research;
 import model.users.students.GraduateStudent;
 
 public class StudentResearcher extends ResearcherDecorator {
-    private final GraduateStudent student;
-
     public StudentResearcher(GraduateStudent student) {
         super(student);
-        this.student = student;
     }
 
     public GraduateStudent getStudent() {
-        return student;
+        return (GraduateStudent) wrappedUser;
     }
 
     @Override
     public String toString() {
-        return "StudentResearcher{" +
-                "student=" + student +
-                '}';
+        return "StudentResearcher[" + wrappedUser + "]";
     }
 }

@@ -5,81 +5,52 @@ import exceptions.NotResearcherException;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
-import java.util.UUID;
 
 public class ResearchProject implements Serializable {
-    private final String id;
     private String topic;
-    private final List<ResearchPaper> publishedPapers;
-    private final List<ResearcherDecorator> participants;
+    private List<ResearcherDecorator> participants;
+    private List<ResearchPaper> publishedPapers;
 
     public ResearchProject(String topic) {
-        this.id = UUID.randomUUID().toString();
         this.topic = topic;
-        this.publishedPapers = new ArrayList<>();
         this.participants = new ArrayList<>();
+        this.publishedPapers = new ArrayList<>();
     }
 
-    public void addParticipant(Object person) throws NotResearcherException {
-        if (!(person instanceof ResearcherDecorator researcher)) {
-            throw new NotResearcherException("Only ResearcherDecorator can join a research project");
+    public void addParticipant(Object user) throws NotResearcherException {
+        if (!(user instanceof ResearcherDecorator)) {
+            throw new NotResearcherException("Only ResearcherDecorator can join research project");
         }
-
+        ResearcherDecorator researcher = (ResearcherDecorator) user;
         if (!participants.contains(researcher)) {
             participants.add(researcher);
         }
     }
 
-    public void removeParticipant(ResearcherDecorator researcher) {
-        participants.remove(researcher);
-    }
-
-    public List<ResearcherDecorator> getParticipants() {
-        return participants;
-    }
-
-    public void publishPaper(ResearchPaper paper) {
+    public void addPaper(ResearchPaper paper) {
         if (paper != null && !publishedPapers.contains(paper)) {
             publishedPapers.add(paper);
         }
-    }
-
-    public List<ResearchPaper> getPublishedPapers() {
-        return publishedPapers;
-    }
-
-    public String getId() {
-        return id;
     }
 
     public String getTopic() {
         return topic;
     }
 
-    public void setTopic(String topic) {
-        this.topic = topic;
+    public List<ResearcherDecorator> getParticipants() {
+        return participants;
+    }
+
+    public List<ResearchPaper> getPublishedPapers() {
+        return publishedPapers;
     }
 
     @Override
     public String toString() {
         return "ResearchProject{" +
-                "id='" + id + '\'' +
-                ", topic='" + topic + '\'' +
-                ", publishedPapers=" + publishedPapers.size() +
+                "topic='" + topic + '\'' +
                 ", participants=" + participants.size() +
+                ", publishedPapers=" + publishedPapers.size() +
                 '}';
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof ResearchProject that)) return false;
-        return Objects.equals(id, that.id);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(id);
     }
 }

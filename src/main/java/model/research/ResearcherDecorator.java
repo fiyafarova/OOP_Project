@@ -12,30 +12,43 @@ import java.util.List;
 import java.util.Objects;
 
 public abstract class ResearcherDecorator implements IResearchable, Serializable {
-    protected User wrapped;
+    protected User wrappedUser;
     protected List<ResearchPaper> papers;
     protected List<ResearchProject> projects;
 
-    public ResearcherDecorator(User wrapped) {
-        if (wrapped == null) {
-            throw new IllegalArgumentException("Wrapped user cannot be null");
-        }
-        this.wrapped = wrapped;
+    public ResearcherDecorator(User wrappedUser) {
+        this.wrappedUser = wrappedUser;
         this.papers = new ArrayList<>();
         this.projects = new ArrayList<>();
     }
 
     @Override
+    public void addPaper(ResearchPaper paper) {
+        if (paper == null) return;
+
+        if (!paper.getAuthors().contains(wrappedUser)) {
+            paper.addAuthor(wrappedUser);
+        }
+
+        if (!papers.contains(paper)) {
+            papers.add(paper);
+        }
+    }
+
+    @Override
+    public List<ResearchPaper> getPapers() {
+        return papers;
+    }
+
+    @Override
     public int calculateHIndex() {
-        List<Integer> citationCounts = papers.stream()
-                .map(ResearchPaper::getCitations)
-                .sorted(Comparator.reverseOrder())
-                .toList();
+        List<ResearchPaper> sorted = new ArrayList<>(papers);
+        sorted.sort(PaperComparators.byCitations());
 
         int h = 0;
-        for (int i = 0; i < citationCounts.size(); i++) {
-            if (citationCounts.get(i) >= i + 1) {
-                h = i + 1;
+        for (ResearchPaper paper : sorted) {
+            if (paper.getCitations() >= h + 1) {
+                h++;
             } else {
                 break;
             }
@@ -45,52 +58,9 @@ public abstract class ResearcherDecorator implements IResearchable, Serializable
 
     @Override
     public void printPapers(Comparator<ResearchPaper> comparator) {
-        List<ResearchPaper> copy = new ArrayList<>(papers);
-        if (comparator != null) {
-            copy.sort(comparator);
-        } else {
-            copy.sort(Comparator.naturalOrder());
-        }
-
-        for (ResearchPaper paper : copy) {
-            System.out.println(paper);
-        }
-    }
-
-    @Override
-    public List<ResearchProject> getResearchProjects() {
-        return projects;
-    }
-
-    @Override
-    public List<ResearchPaper> getPapers() {
-        return papers;
-    }
-
-    public void publishPaper(ResearchPaper paper, Journal journal) {
-        if (paper == null || journal == null) {
-            throw new IllegalArgumentException("Paper and journal must not be null");
-        }
-
-        if (!paper.getAuthors().contains(this)) {
-            paper.addAuthor(this);
-        }
-
-        if (!papers.contains(paper)) {
-            papers.add(paper);
-        }
-
-        journal.publishPaper(paper);
-
-        News news = new News(
-                "New research paper published",
-                wrapped.getFirstName() + " " + wrapped.getLastName()
-                        + " published paper: " + paper.getTitle(),
-                NewsTopic.RESEARCH,
-                wrapped
-        );
-
-        DataStorage.getInstance().addNews(news);
+        papers.stream()
+                .sorted(comparator)
+                .forEach(System.out::println);
     }
 
     public void addProject(ResearchProject project) {
@@ -99,28 +69,72 @@ public abstract class ResearcherDecorator implements IResearchable, Serializable
         }
     }
 
+    public List<ResearchProject> getProjects() {
+        return projects;
+    }
+
+    public void publishPaperToJournal(ResearchPaper paper, Journal journal) {
+        if (paper == null || journal == null) return;
+
+        paper.setJournal(journal.getName());
+        addPaper(paper);
+        journal.publishPaper(paper);
+
+        News news = new News(
+                "New research paper",
+                wrappedUser.getFirstName() + " " + wrappedUser.getLastName() +
+                        " published: " + paper.getTitle(),
+                NewsTopic.RESEARCH,
+                wrappedUser
+        );
+        DataStorage.getInstance().addNews(news);
+    }
+
+    public void subscribeToJournal(Journal journal) {
+        if (journal != null) {
+            journal.subscribe(wrappedUser);
+        }
+    }
+
+    public User getWrappedUser() {
+        return wrappedUser;
+    }
+
     public User getWrapped() {
-        return wrapped;
+        return wrappedUser;
+    }
+
+    public String getId() {
+        return wrappedUser.getId();
+    }
+
+    public String getFirstName() {
+        return wrappedUser.getFirstName();
+    }
+
+    public String getLastName() {
+        return wrappedUser.getLastName();
+    }
+
+    public String getLogin() {
+        return wrappedUser.getLogin();
     }
 
     @Override
     public String toString() {
-        return "ResearcherDecorator{" +
-                "wrapped=" + wrapped +
-                ", papers=" + papers.size() +
-                ", projects=" + projects.size() +
-                '}';
+        return "ResearcherDecorator[" + wrappedUser + "]";
     }
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof ResearcherDecorator that)) return false;
-        return Objects.equals(wrapped, that.wrapped);
+        if (!(o instanceof ResearcherDecorator)) return false;
+        ResearcherDecorator that = (ResearcherDecorator) o;
+        return Objects.equals(wrappedUser, that.wrappedUser);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(wrapped);
+        return Objects.hash(wrappedUser);
     }
 }

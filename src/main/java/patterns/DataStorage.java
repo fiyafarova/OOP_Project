@@ -52,7 +52,9 @@ public class DataStorage implements Serializable {
         return instance;
     }
 
-    //Serialization
+    // =========================
+    // Serialization
+    // =========================
 
     public void save(String filename) {
         try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(filename))) {
@@ -74,7 +76,9 @@ public class DataStorage implements Serializable {
         }
     }
 
+    // =========================
     // Users
+    // =========================
 
     public void addUser(User user) {
         if (user != null && getUserById(user.getId()) == null) {
@@ -89,13 +93,15 @@ public class DataStorage implements Serializable {
     public User getUserById(String id) {
         return users.stream()
                 .filter(u -> u.getId().equals(id))
-                .findFirst().orElse(null);
+                .findFirst()
+                .orElse(null);
     }
 
     public User getUserByLogin(String login) {
         return users.stream()
                 .filter(u -> u.getLogin().equals(login))
-                .findFirst().orElse(null);
+                .findFirst()
+                .orElse(null);
     }
 
     public List<User> getAllUsers() {
@@ -134,7 +140,10 @@ public class DataStorage implements Serializable {
                 .collect(Collectors.toList());
     }
 
+    // =========================
     // Courses
+    // =========================
+
     public void addCourse(Course course) {
         if (course != null && getCourseByCode(course.getCode()) == null) {
             courses.add(course);
@@ -148,7 +157,8 @@ public class DataStorage implements Serializable {
     public Course getCourseByCode(String code) {
         return courses.stream()
                 .filter(c -> c.getCode().equals(code))
-                .findFirst().orElse(null);
+                .findFirst()
+                .orElse(null);
     }
 
     public List<Course> getAllCourses() {
@@ -167,10 +177,14 @@ public class DataStorage implements Serializable {
                 .collect(Collectors.toList());
     }
 
-    //News
+    // =========================
+    // News
+    // =========================
 
     public void addNews(News n) {
-        if (n != null) news.add(n);
+        if (n != null) {
+            news.add(n);
+        }
     }
 
     public void removeNews(String newsId) {
@@ -183,11 +197,17 @@ public class DataStorage implements Serializable {
 
     public List<News> getSortedNews() {
         return news.stream()
-                .sorted((a, b) -> Boolean.compare(b.isPinned(), a.isPinned()))
+                .sorted((a, b) -> {
+                    if (a.isPinned() && !b.isPinned()) return -1;
+                    if (!a.isPinned() && b.isPinned()) return 1;
+                    return b.getCreatedAt().compareTo(a.getCreatedAt());
+                })
                 .collect(Collectors.toList());
     }
 
+    // =========================
     // Journals
+    // =========================
 
     public void addJournal(Journal journal) {
         if (journal != null && !journals.contains(journal)) {
@@ -197,18 +217,23 @@ public class DataStorage implements Serializable {
 
     public Journal getJournalByName(String name) {
         return journals.stream()
-                .filter(j -> j.getName().equals(name))
-                .findFirst().orElse(null);
+                .filter(j -> j.getName().equalsIgnoreCase(name))
+                .findFirst()
+                .orElse(null);
     }
 
     public List<Journal> getAllJournals() {
         return journals;
     }
 
-    //Requests
+    // =========================
+    // Requests
+    // =========================
 
     public void addRequest(Request request) {
-        if (request != null) requests.add(request);
+        if (request != null) {
+            requests.add(request);
+        }
     }
 
     public List<Request> getAllRequests() {
@@ -221,7 +246,9 @@ public class DataStorage implements Serializable {
                 .collect(Collectors.toList());
     }
 
+    // =========================
     // Researchers
+    // =========================
 
     public void addResearcher(ResearcherDecorator researcher) {
         if (researcher != null && !researchers.contains(researcher)) {
@@ -233,6 +260,13 @@ public class DataStorage implements Serializable {
         return researchers;
     }
 
+    public ResearcherDecorator getResearcherByUser(User user) {
+        return researchers.stream()
+                .filter(r -> r.getWrapped().equals(user))
+                .findFirst()
+                .orElse(null);
+    }
+
     public ResearcherDecorator getTopCitedResearcher() {
         return researchers.stream()
                 .max(Comparator.comparingInt(ResearcherDecorator::calculateHIndex))
@@ -241,6 +275,16 @@ public class DataStorage implements Serializable {
 
     public List<ResearcherDecorator> getTopCitedBySchool(School school) {
         return researchers.stream()
+                .filter(r -> {
+                    User u = r.getWrapped();
+                    if (u instanceof Student) {
+                        return ((Student) u).getSchool() == school;
+                    }
+                    if (u instanceof Teacher) {
+                        return ((Teacher) u).getSchool() == school;
+                    }
+                    return false;
+                })
                 .sorted(Comparator.comparingInt(ResearcherDecorator::calculateHIndex).reversed())
                 .collect(Collectors.toList());
     }
@@ -253,7 +297,9 @@ public class DataStorage implements Serializable {
                 .forEach(System.out::println);
     }
 
+    // =========================
     // Organizations
+    // =========================
 
     public void addOrganization(StudentOrganization org) {
         if (org != null && !organizations.contains(org)) {
@@ -265,7 +311,9 @@ public class DataStorage implements Serializable {
         return organizations;
     }
 
+    // =========================
     // Logs
+    // =========================
 
     public void addLog(String entry) {
         logs.add(LocalDateTime.now() + ": " + entry);
@@ -280,6 +328,9 @@ public class DataStorage implements Serializable {
         return "DataStorage[users=" + users.size()
                 + ", courses=" + courses.size()
                 + ", news=" + news.size()
-                + ", requests=" + requests.size() + "]";
+                + ", journals=" + journals.size()
+                + ", requests=" + requests.size()
+                + ", researchers=" + researchers.size()
+                + ", organizations=" + organizations.size() + "]";
     }
 }

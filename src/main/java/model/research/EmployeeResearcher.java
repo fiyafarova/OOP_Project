@@ -3,21 +3,16 @@ package model.research;
 import model.users.employees.Employee;
 
 public class EmployeeResearcher extends ResearcherDecorator {
-    private final Employee employee;
-
     public EmployeeResearcher(Employee employee) {
         super(employee);
-        this.employee = employee;
     }
 
     public Employee getEmployee() {
-        return employee;
+        return (Employee) wrappedUser;
     }
 
     @Override
     public String toString() {
-        return "EmployeeResearcher{" +
-                "employee=" + employee +
-                '}';
+        return "EmployeeResearcher[" + wrappedUser + "]";
     }
 }

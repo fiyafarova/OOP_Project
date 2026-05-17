@@ -28,10 +28,12 @@ public class GraduateStudent extends Student {
         if (supervisor == null) {
             throw new IllegalArgumentException("Supervisor cannot be null");
         }
-        if (supervisor.calculateHIndex() < 3) {
-            throw new LowHIndexException(
-                    "Supervisor h-index must be at least 3, but is: " + supervisor.calculateHIndex());
+
+        int hIndex = supervisor.calculateHIndex();
+        if (hIndex < 3) {
+            throw new LowHIndexException("H-index too low: " + hIndex);
         }
+
         this.supervisor = supervisor;
     }
 
@@ -62,6 +64,7 @@ public class GraduateStudent extends Student {
         return "GraduateStudent[name=" + getFullName()
                 + ", degree=" + degreeType
                 + ", school=" + getSchool()
+                + ", supervisor=" + (supervisor != null ? supervisor.getFirstName() + " " + supervisor.getLastName() : "none")
                 + ", diplomaPapers=" + diplomaPapers.size() + "]";
     }
 
@@ -69,7 +72,8 @@ public class GraduateStudent extends Student {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (!(o instanceof GraduateStudent)) return false;
-        return Objects.equals(getId(), ((GraduateStudent) o).getId());
+        GraduateStudent that = (GraduateStudent) o;
+        return Objects.equals(getId(), that.getId());
     }
 
     @Override

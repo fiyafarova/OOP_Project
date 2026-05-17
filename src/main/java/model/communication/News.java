@@ -7,17 +7,16 @@ import java.io.Serializable;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 import java.util.UUID;
 
 public class News implements Serializable {
-    private final String id;
+    private String id;
     private String title;
     private String content;
     private NewsTopic topic;
-    private final LocalDate date;
-    private final User author;
-    private final List<Comment> comments;
+    private User author;
+    private LocalDate createdAt;
+    private List<Comment> comments;
     private boolean isPinned;
 
     public News(String title, String content, NewsTopic topic, User author) {
@@ -26,9 +25,9 @@ public class News implements Serializable {
         this.content = content;
         this.topic = topic;
         this.author = author;
-        this.date = LocalDate.now();
+        this.createdAt = LocalDate.now();
         this.comments = new ArrayList<>();
-        this.isPinned = topic == NewsTopic.RESEARCH;
+        this.isPinned = (topic == NewsTopic.RESEARCH);
     }
 
     public void addComment(Comment comment) {
@@ -37,12 +36,20 @@ public class News implements Serializable {
         }
     }
 
+    public String getId() {
+        return id;
+    }
+
     public List<Comment> getComments() {
         return comments;
     }
 
-    public String getId() {
-        return id;
+    public boolean isPinned() {
+        return isPinned;
+    }
+
+    public NewsTopic getTopic() {
+        return topic;
     }
 
     public String getTitle() {
@@ -53,47 +60,22 @@ public class News implements Serializable {
         return content;
     }
 
-    public NewsTopic getTopic() {
-        return topic;
-    }
-
-    public LocalDate getDate() {
-        return date;
-    }
-
     public User getAuthor() {
         return author;
     }
 
-    public boolean isPinned() {
-        return isPinned;
-    }
-
-    public void setPinned(boolean pinned) {
-        isPinned = pinned;
+    public LocalDate getCreatedAt() {
+        return createdAt;
     }
 
     @Override
     public String toString() {
-        return "News{" +
+        return (isPinned ? "[PINNED] " : "") +
+                "News{" +
                 "id='" + id + '\'' +
                 ", title='" + title + '\'' +
                 ", topic=" + topic +
-                ", date=" + date +
-                ", isPinned=" + isPinned +
-                ", comments=" + comments.size() +
+                ", createdAt=" + createdAt +
                 '}';
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof News news)) return false;
-        return Objects.equals(id, news.id);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(id);
     }
 }
