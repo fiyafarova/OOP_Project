@@ -70,12 +70,11 @@ public class News implements Serializable {
 
     @Override
     public String toString() {
+        String authorName = (author != null) ? author.getFullName() : "Unknown";
         return (isPinned ? "[PINNED] " : "") +
-                "News{" +
-                "id='" + id + '\'' +
-                ", title='" + title + '\'' +
-                ", topic=" + topic +
-                ", createdAt=" + createdAt +
-                '}';
+                title + "\n" +
+                "   Topic: " + topic + "\n" +
+                "   Date: " + createdAt + "\n" +
+                "   Author: " + authorName;
     }
 }
