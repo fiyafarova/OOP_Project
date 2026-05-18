@@ -68,8 +68,10 @@ public class LanguageManager {
         add("menu.teacher.3", "Баға қою", "Put mark", "Выставить оценку");
         add("menu.teacher.4", "Деканға шағым жіберу", "Send complaint to dean", "Отправить жалобу декану");
         add("menu.teacher.5", "Қызметкерге хабарлама жіберу", "Send message to employee", "Отправить сообщение сотруднику");
-        add("menu.teacher.6", "Тілді ауыстыру", "Switch language", "Сменить язык");
-        add("menu.teacher.7", "Шығу", "Logout", "Выйти");
+        add("menu.teacher.6", "Сабақ қосу", "Add lesson", "Добавить занятие");
+        add("menu.teacher.7", "Сабақтарды көру", "View lessons", "Просмотр занятий");
+        add("menu.teacher.8", "Тілді ауыстыру", "Switch language", "Сменить язык");
+        add("menu.teacher.9", "Шығу", "Logout", "Выйти");
 
         //  Admin menu
         add("menu.admin.title", "\n=== ӘКІМШІ МӘЗІРІ ===", "\n=== ADMIN MENU ===", "\n=== МЕНЮ АДМИНИСТРАТОРА ===");
@@ -78,6 +80,7 @@ public class LanguageManager {
         add("menu.admin.3", "Барлық пайдаланушылар", "View all users", "Все пользователи");
         add("menu.admin.4", "Журналдарды көру", "View logs", "Просмотр журналов");
         add("menu.admin.5", "Тілді ауыстыру", "Switch language", "Сменить язык");
+        add("menu.admin.7", "Қызметкерді зерттеуші ету", "Make employee a researcher", "Назначить сотрудника исследователем");
         add("menu.admin.6", "Шығу", "Logout", "Выйти");
 
         //  Manager menu
@@ -114,6 +117,8 @@ public class LanguageManager {
         add("menu.researcher.7", "Журналға мақала жариялау", "Publish paper to journal", "Опубликовать статью в журнале");
         add("menu.researcher.8", "Ең көп цитатталған зерттеуші", "View top cited researcher", "Топ-цитируемый исследователь");
         add("menu.researcher.9", "Шығу", "Logout", "Выйти");
+        add("menu.researcher.10", "Цитата алу", "Get paper citation", "Получить цитату статьи");
+        add("menu.researcher.11", "Артқа", "Back", "Назад");
 
         // News menu
         add("menu.news.title", "\n=== ЖАҢАЛЫҚТАР ===", "\n=== NEWS ===", "\n=== НОВОСТИ ===");

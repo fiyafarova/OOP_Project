@@ -1,8 +1,10 @@
 package menu;
 
 import enums.Language;
+import enums.LessonType;
 import enums.UrgencyLevel;
 import model.academic.Course;
+import model.academic.Lesson;
 import model.academic.Mark;
 import model.users.User;
 import model.users.employees.Employee;
@@ -37,6 +39,8 @@ public class TeacherMenu {
             System.out.println("5. " + LanguageManager.get(lang(), "menu.teacher.5"));
             System.out.println("6. " + LanguageManager.get(lang(), "menu.teacher.6"));
             System.out.println("7. " + LanguageManager.get(lang(), "menu.teacher.7"));
+            System.out.println("8. " + LanguageManager.get(lang(), "menu.teacher.8"));
+            System.out.println("9. " + LanguageManager.get(lang(), "menu.teacher.9"));
             LanguageManager.prompt(lang(), "general.choose");
 
             try {
@@ -47,8 +51,10 @@ public class TeacherMenu {
                     case 3: putMark(); break;
                     case 4: sendComplaint(); break;
                     case 5: sendMessage(); break;
-                    case 6: switchLanguage(); break;
-                    case 7: teacher.logout(); running = false; break;
+                    case 6: addLesson(); break;
+                    case 7: viewLessonsInCourse(); break;
+                    case 8: switchLanguage(); break;
+                    case 9: teacher.logout(); running = false; break;
                     default: LanguageManager.print(lang(), "general.invalid_choice");
                 }
             } catch (NumberFormatException e) {
@@ -240,9 +246,7 @@ public class TeacherMenu {
         }
     }
 
-    /**
-     * ✅ FIX: Language switching applied in all menus.
-     */
+
     private void switchLanguage() {
         LanguageManager.print(lang(), "lang.switch_prompt");
         try {
@@ -252,5 +256,41 @@ public class TeacherMenu {
         } catch (IllegalArgumentException e) {
             LanguageManager.print(lang(), "general.invalid_input");
         }
+    }
+
+    private void addLesson() {
+        Course course = selectCourse();
+        if (course == null) return;
+
+        System.out.print("Lesson title: ");
+        String title = scanner.nextLine().trim();
+
+        System.out.println("Lesson type (LECTURE / PRACTICE): ");
+        LessonType type;
+        try {
+            type = LessonType.valueOf(scanner.nextLine().trim().toUpperCase());
+        } catch (IllegalArgumentException e) {
+            System.out.println("Invalid type.");
+            return;
+        }
+
+        System.out.print("Description: ");
+        String desc = scanner.nextLine().trim();
+
+        System.out.print("Room (e.g. A301): ");
+        String room = scanner.nextLine().trim();
+
+        System.out.print("Schedule (e.g. Mon 09:00): ");
+        String schedule = scanner.nextLine().trim();
+
+        Lesson lesson = new Lesson(title, type, course,
+                java.time.LocalDateTime.now(), desc, room, schedule);
+        teacher.addLesson(course, lesson);
+    }
+
+    private void viewLessonsInCourse() {
+        Course course = selectCourse();
+        if (course == null) return;
+        teacher.viewLessons(course);
     }
 }

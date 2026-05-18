@@ -4,6 +4,7 @@ import enums.School;
 import enums.TeacherPosition;
 import enums.UrgencyLevel;
 import model.academic.Course;
+import model.academic.Lesson;
 import model.academic.Mark;
 import model.communication.Request;
 import model.users.students.Student;
@@ -97,6 +98,22 @@ public class Teacher extends Employee {
 
     public void updateRating(int newRating) {
         rating = (rating * ratingCount + newRating) / (++ratingCount);
+    }
+
+    public void addLesson(Course course, Lesson lesson) {
+        course.addLesson(lesson);
+        DataStorage.getInstance().addLog(
+                "Teacher " + getFullName() + " added lesson '"
+                        + lesson.getTitle() + "' to course " + course.getName());
+        System.out.println("Lesson added: " + lesson);
+    }
+
+    public void viewLessons(Course course) {
+        if (course.getLessons().isEmpty()) {
+            System.out.println("No lessons in this course.");
+            return;
+        }
+        course.getLessons().forEach(System.out::println);
     }
 
     @Override

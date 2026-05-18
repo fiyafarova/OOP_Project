@@ -3,6 +3,7 @@ package main;
 import enums.*;
 import menu.*;
 import model.academic.Course;
+import model.academic.Lesson;
 import model.academic.StudentOrganization;
 import model.communication.News;
 import model.research.Journal;
@@ -236,7 +237,7 @@ public class Main {
         t2Data.put("login", "aivanova");
         t2Data.put("password", "pass123");
         t2Data.put("position", "PROFESSOR");
-        Teacher teacher2 = UserFactory.createTeacher(t2Data, School.BS);
+        Teacher teacher2 = UserFactory.createTeacher(t2Data, School.SB);
         ds.addUser(teacher2);
 
         // Students
@@ -255,29 +256,82 @@ public class Main {
         s2Data.put("login", "dseitkali");
         s2Data.put("password", "stu123");
         s2Data.put("year", "1");
-        Student student2 = UserFactory.createStudent(s2Data, School.BS);
+        Student student2 = UserFactory.createStudent(s2Data, School.SB);
         ds.addUser(student2);
 
-        // Graduate Student
+        // Graduate Student (MASTER)
         GraduateStudent gradStudent = new GraduateStudent(
-                "Aruzhan",
-                "Researcher",
-                "aresearcher",
-                "grad123",
-                School.SITE,
-                DegreeType.MASTER,
-                1
+                "Aruzhan", "Researcher", "aresearcher", "grad123",
+                School.SITE, DegreeType.MASTER, 1
         );
         ds.addUser(gradStudent);
 
+        TeacherResearcher teacherResearcher = new TeacherResearcher(teacher2);
+        StudentResearcher studentResearcher = new StudentResearcher(gradStudent);
+        ds.addResearcher(teacherResearcher);
+        ds.addResearcher(studentResearcher);
+
+        // Research papers for professor
+        ResearchPaper p1 = new ResearchPaper(
+                "Machine Learning in Education", "KBTU Research Journal",
+                10, LocalDate.of(2023, 5, 10), "10.1000/ml-edu");
+        p1.setCitations(10);
+        teacherResearcher.addPaper(p1);
+
+        ResearchPaper p2 = new ResearchPaper(
+                "Data Science for University Systems", "Science Bulletin",
+                12, LocalDate.of(2022, 11, 5), "10.1000/ds-university");
+        p2.setCitations(7);
+        teacherResearcher.addPaper(p2);
+
+        ResearchPaper p3 = new ResearchPaper(
+                "AI-based Student Analytics", "KBTU Research Journal",
+                8, LocalDate.of(2024, 2, 15), "10.1000/ai-analytics");
+        p3.setCitations(4);
+        teacherResearcher.addPaper(p3);
+
+        ResearchPaper p4 = new ResearchPaper(
+                "Educational Recommendation Systems", "KBTU Research Journal",
+                9, LocalDate.of(2024, 4, 1), "10.1000/recommendation-systems");
+        p4.setCitations(2);
+        studentResearcher.addPaper(p4);
+        gradStudent.addDiplomaPaper(p4);
+
+        try {
+            gradStudent.setSupervisor(teacherResearcher);
+        } catch (Exception e) {
+            System.out.println("Could not assign supervisor: " + e.getMessage());
+        }
+
+        GraduateStudent phdStudent = new GraduateStudent(
+                "Daniyar", "PhDStudent", "daniyar", "phd123",
+                School.SITE, DegreeType.PHD, 2
+        );
+        ds.addUser(phdStudent);
+
+        StudentResearcher phdResearcher = new StudentResearcher(phdStudent);
+        ds.addResearcher(phdResearcher);
+
+        ResearchPaper phdPaper = new ResearchPaper(
+                "Deep Learning for NLP", "Science Bulletin",
+                15, LocalDate.of(2024, 1, 20), "10.1000/dl-nlp");
+        phdPaper.setCitations(5);
+        phdResearcher.addPaper(phdPaper);
+        phdStudent.addDiplomaPaper(phdPaper);
+
+        try {
+            phdStudent.setSupervisor(teacherResearcher);
+        } catch (Exception e) {
+            System.out.println("Could not assign supervisor: " + e.getMessage());
+        }
+
         // Courses
         Course c1 = new Course("CS101", "Introduction to Programming", 5, School.SITE, CourseType.MAJOR);
-        Course c2 = new Course("MATH101", "Calculus", 5, School.BS, CourseType.MAJOR);
-        Course c3 = new Course("ENG101", "Academic English", 3, School.SSH, CourseType.FREE_ELECTIVE);
+        Course c2 = new Course("MATH101", "Calculus", 5, School.SB, CourseType.MAJOR);
+        Course c3 = new Course("ENG101", "Academic English", 3, School.SHI, CourseType.FREE_ELECTIVE);
 
         c1.setLectureTeacher(teacher1);
         teacher1.addCourse(c1);
-
         c2.setLectureTeacher(teacher2);
         teacher2.addCourse(c2);
 
@@ -297,73 +351,33 @@ public class Main {
         ds.addJournal(j1);
         ds.addJournal(j2);
 
-        // Researchers
-        TeacherResearcher teacherResearcher = new TeacherResearcher(teacher2);
-        StudentResearcher studentResearcher = new StudentResearcher(gradStudent);
-
-        ds.addResearcher(teacherResearcher);
-        ds.addResearcher(studentResearcher);
-
-        // Research papers for professor
-        ResearchPaper p1 = new ResearchPaper(
-                "Machine Learning in Education",
-                "KBTU Research Journal",
-                10,
-                LocalDate.of(2023, 5, 10),
-                "10.1000/ml-edu"
-        );
-        p1.setCitations(10);
-        teacherResearcher.addPaper(p1);
-
-        ResearchPaper p2 = new ResearchPaper(
-                "Data Science for University Systems",
-                "Science Bulletin",
-                12,
-                LocalDate.of(2022, 11, 5),
-                "10.1000/ds-university"
-        );
-        p2.setCitations(7);
-        teacherResearcher.addPaper(p2);
-
-        ResearchPaper p3 = new ResearchPaper(
-                "AI-based Student Analytics",
-                "KBTU Research Journal",
-                8,
-                LocalDate.of(2024, 2, 15),
-                "10.1000/ai-analytics"
-        );
-        p3.setCitations(4);
-        teacherResearcher.addPaper(p3);
-
-        ResearchPaper p4 = new ResearchPaper(
-                "Educational Recommendation Systems",
-                "KBTU Research Journal",
-                9,
-                LocalDate.of(2024, 4, 1),
-                "10.1000/recommendation-systems"
-        );
-        p4.setCitations(2);
-        studentResearcher.addPaper(p4);
-        gradStudent.addDiplomaPaper(p4);
-
-        try {
-            gradStudent.setSupervisor(teacherResearcher);
-        } catch (Exception e) {
-            System.out.println("Could not assign supervisor: " + e.getMessage());
-        }
-
         j1.subscribe(student1);
         j1.subscribe(student2);
         j1.subscribe(teacher1);
 
         teacherResearcher.publishPaperToJournal(p1, j1);
 
+        // News
         ds.addNews(new News(
                 "Welcome to the University System",
                 "System initialized successfully with demo data.",
-                NewsTopic.GENERAL,
-                admin
+                NewsTopic.GENERAL, admin
         ));
+
+        // Lessons
+        Lesson l1 = new Lesson("Intro to OOP", LessonType.LECTURE, c1,
+                java.time.LocalDateTime.of(2024, 9, 2, 9, 0),
+                "Introduction to OOP concepts", "A201", "Mon 09:00-10:30");
+        Lesson l2 = new Lesson("Practice: Classes", LessonType.PRACTICE, c1,
+                java.time.LocalDateTime.of(2024, 9, 4, 11, 0),
+                "Writing first Java classes", "Lab B104", "Wed 11:00-12:30");
+        c1.addLesson(l1);
+        c1.addLesson(l2);
+
+        Lesson l3 = new Lesson("Limits and Derivatives", LessonType.LECTURE, c2,
+                java.time.LocalDateTime.of(2024, 9, 3, 8, 0),
+                "Introduction to calculus", "A305", "Tue 08:00-09:30");
+        c2.addLesson(l3);
 
         ds.addLog("Test data initialized.");
         System.out.println("Test data created successfully.");
@@ -374,5 +388,6 @@ public class Main {
         System.out.println("  Professor    → login: aivanova    / password: pass123");
         System.out.println("  Student      → login: bakhmetov   / password: stu123");
         System.out.println("  Graduate     → login: aresearcher / password: grad123");
+        System.out.println("  PhD Student  → login: daniyar     / password: phd123");
     }
 }

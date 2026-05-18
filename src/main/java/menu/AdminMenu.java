@@ -2,8 +2,12 @@ package menu;
 
 import enums.Language;
 import enums.School;
+import model.research.EmployeeResearcher;
+import model.research.TeacherResearcher;
 import model.users.User;
 import model.users.employees.Admin;
+import model.users.employees.Employee;
+import model.users.employees.Teacher;
 import patterns.DataStorage;
 import patterns.UserFactory;
 import util.LanguageManager;
@@ -34,6 +38,8 @@ public class AdminMenu {
             System.out.println("4. " + LanguageManager.get(lang(), "menu.admin.4"));
             System.out.println("5. " + LanguageManager.get(lang(), "menu.admin.5"));
             System.out.println("6. " + LanguageManager.get(lang(), "menu.admin.6"));
+            System.out.println("7. " + LanguageManager.get(lang(), "menu.admin.7"));
+
             LanguageManager.prompt(lang(), "general.choose");
 
             try {
@@ -45,6 +51,7 @@ public class AdminMenu {
                     case 4: admin.viewLogs(); break;
                     case 5: switchLanguage(); break;
                     case 6: admin.logout(); running = false; break;
+                    case 7: makeResearcher(); break;
                     default: LanguageManager.print(lang(), "general.invalid_choice");
                 }
             } catch (NumberFormatException e) {
@@ -146,6 +153,41 @@ public class AdminMenu {
             admin.switchLanguage(newLang);
             LanguageManager.print(newLang, "lang.switched");
         } catch (IllegalArgumentException e) {
+            LanguageManager.print(lang(), "general.invalid_input");
+        }
+    }
+
+    private void makeResearcher() {
+        List<User> employees = DataStorage.getInstance().getAllEmployees();
+        if (employees.isEmpty()) { System.out.println("No employees."); return; }
+
+        System.out.println("-- Employees --");
+        for (int i = 0; i < employees.size(); i++) {
+            System.out.println((i + 1) + ". " + employees.get(i).getFullName()
+                    + " [" + employees.get(i).getClass().getSimpleName() + "]");
+        }
+        LanguageManager.prompt(lang(), "general.choose");
+        try {
+            int idx = Integer.parseInt(scanner.nextLine().trim()) - 1;
+            if (idx < 0 || idx >= employees.size()) {
+                LanguageManager.print(lang(), "general.invalid_choice"); return;
+            }
+            User selected = employees.get(idx);
+            if (DataStorage.getInstance().getResearcherByUser(selected) != null) {
+                System.out.println("Already a researcher."); return;
+            }
+            if (selected instanceof Teacher) {
+                TeacherResearcher tr = new TeacherResearcher((Teacher) selected);
+                DataStorage.getInstance().addResearcher(tr);
+                System.out.println("Teacher assigned as researcher.");
+            } else if (selected instanceof Employee) {
+                EmployeeResearcher er = new EmployeeResearcher((Employee) selected);
+                DataStorage.getInstance().addResearcher(er);
+                System.out.println("Employee assigned as researcher.");
+            } else {
+                System.out.println("Only employees can be made researchers this way.");
+            }
+        } catch (NumberFormatException e) {
             LanguageManager.print(lang(), "general.invalid_input");
         }
     }

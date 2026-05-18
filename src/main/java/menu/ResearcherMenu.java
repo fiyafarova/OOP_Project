@@ -1,5 +1,7 @@
 package menu;
 
+import enums.CitationFormat;
+import enums.Format;
 import enums.Language;
 import model.research.Journal;
 import model.research.PaperComparators;
@@ -44,6 +46,7 @@ public class ResearcherMenu {
             System.out.println("7. " + LanguageManager.get(lang(user), "menu.researcher.7"));
             System.out.println("8. " + LanguageManager.get(lang(user), "menu.researcher.8"));
             System.out.println("9. " + LanguageManager.get(lang(user), "menu.researcher.9"));
+            System.out.println("10. " + LanguageManager.get(lang(user), "menu.researcher.10"));
             LanguageManager.prompt(lang(user), "general.choose");
 
             String input = sc.nextLine().trim();
@@ -74,6 +77,11 @@ public class ResearcherMenu {
                     viewTopCitedResearcher(user);
                     break;
                 case "9":
+                    return;
+                case "10":
+                    printCitation(researcher, sc, user);
+                    break;
+                case "11":
                     return;
                 default:
                     LanguageManager.print(lang(user), "general.invalid_choice");
@@ -240,14 +248,75 @@ public class ResearcherMenu {
     }
 
     private static void viewTopCitedResearcher(User user) {
-        ResearcherDecorator top = DataStorage.getInstance().getTopCitedResearcher();
-        if (top == null) {
-            LanguageManager.print(lang(user), "general.no_data");
-            return;
-        }
+        System.out.println("1. Top researcher (all university)");
+        System.out.println("2. Top researchers by school");
+        System.out.println("3. All papers sorted");
+        String choice = new java.util.Scanner(System.in).nextLine().trim();
 
-        System.out.println("Top cited researcher: " +
-                top.getFirstName() + " " + top.getLastName() +
-                " | H-index = " + top.calculateHIndex());
+        switch (choice) {
+            case "1":
+                ResearcherDecorator top = DataStorage.getInstance().getTopCitedResearcher();
+                if (top == null) { LanguageManager.print(lang(user), "general.no_data"); return; }
+                System.out.println("Top cited researcher: "
+                        + top.getFirstName() + " " + top.getLastName()
+                        + " | H-index = " + top.calculateHIndex()
+                        + " | Papers = " + top.getPapers().size());
+                break;
+            case "2":
+                System.out.println("School (SITE/SB/SEDU/SHI/SBS/SAM/SMSCI): ");
+                try {
+                    enums.School school = enums.School.valueOf(
+                            new java.util.Scanner(System.in).nextLine().trim().toUpperCase());
+                    java.util.List<ResearcherDecorator> bySchool =
+                            DataStorage.getInstance().getTopCitedBySchool(school);
+                    if (bySchool.isEmpty()) { System.out.println("No researchers in this school."); return; }
+                    bySchool.forEach(r -> System.out.println(
+                            r.getFirstName() + " " + r.getLastName()
+                                    + " | H-index = " + r.calculateHIndex()));
+                } catch (IllegalArgumentException e) {
+                    System.out.println("Invalid school.");
+                }
+                break;
+            case "3":
+                System.out.println("Sort by: 1=Citations  2=Date  3=Pages");
+                String sort = new java.util.Scanner(System.in).nextLine().trim();
+                java.util.Comparator<ResearchPaper> cmp;
+                switch (sort) {
+                    case "2": cmp = PaperComparators.byDate(); break;
+                    case "3": cmp = PaperComparators.byPages(); break;
+                    default:  cmp = PaperComparators.byCitations();
+                }
+                DataStorage.getInstance().printAllPapers(cmp);
+                break;
+            default:
+                LanguageManager.print(lang(user), "general.invalid_choice");
+        }
+    }
+
+    private static void printCitation(ResearcherDecorator researcher, Scanner sc, User user) {
+        List<ResearchPaper> papers = researcher.getPapers();
+        if (papers.isEmpty()) { System.out.println("No papers."); return; }
+
+        for (int i = 0; i < papers.size(); i++) {
+            System.out.println((i + 1) + ". " + papers.get(i).getTitle());
+        }
+        System.out.print("Choose paper #: ");
+        int idx;
+        try { idx = Integer.parseInt(sc.nextLine().trim()) - 1; }
+        catch (NumberFormatException e) { return; }
+        if (idx < 0 || idx >= papers.size()) return;
+
+        System.out.println("Format: 1=APA  2=MLA  3=IEEE  4=CHICAGO  5=PLAIN_TEXT  6=BIBTEX");
+        String fmt = sc.nextLine().trim();
+        ResearchPaper paper = papers.get(idx);
+        switch (fmt) {
+            case "1": System.out.println(paper.getCitation(CitationFormat.APA)); break;
+            case "2": System.out.println(paper.getCitation(CitationFormat.MLA)); break;
+            case "3": System.out.println(paper.getCitation(CitationFormat.IEEE)); break;
+            case "4": System.out.println(paper.getCitation(CitationFormat.CHICAGO)); break;
+            case "5": System.out.println(paper.getCitation(Format.PLAIN_TEXT)); break;
+            case "6": System.out.println(paper.getCitation(Format.BIBTEX)); break;
+            default: LanguageManager.print(lang(user), "general.invalid_choice");
+        }
     }
 }
