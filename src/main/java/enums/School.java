@@ -1,5 +1,5 @@
 package enums;
 
 public enum School {
-    SITE, SB, SEDU, SHI, SBS, SAM, SMSCI
+    SITE, SEPI, BS, SG, ISE, KMA, SAM, SCE, SSC, SMCGT
 }

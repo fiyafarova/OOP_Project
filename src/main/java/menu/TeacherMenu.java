@@ -198,7 +198,7 @@ public class TeacherMenu {
                 if (mi >= 0 && mi < managers.size()) {
                     dean = managers.get(mi);
                 }
-            } catch (NumberFormatException _) {}
+            } catch (NumberFormatException e) {}
         }
 
         System.out.println("Urgency (LOW / MEDIUM / HIGH): ");
