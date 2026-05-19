@@ -12,6 +12,8 @@ public class TechSupportSpecialist extends Employee {
     private static final long serialVersionUID = 1L;
 
     private List<Request> assignedRequests;
+    private List<Request> viewedRequests = new ArrayList<>(); // добавь поле
+
 
     public TechSupportSpecialist(String firstName, String lastName,
                                  String login, String password) {
@@ -21,13 +23,22 @@ public class TechSupportSpecialist extends Employee {
 
     public List<Request> viewNewRequests() {
         List<Request> newRequests = DataStorage.getInstance().getNewRequests();
-        newRequests.forEach(r -> r.setStatus(RequestStatus.VIEWED));
+        newRequests.forEach(r -> {
+            r.setStatus(RequestStatus.VIEWED);
+            if (!viewedRequests.contains(r)) {
+                viewedRequests.add(r);
+            }
+        });
         if (newRequests.isEmpty()) {
             System.out.println("No new requests.");
         } else {
             newRequests.forEach(System.out::println);
         }
         return newRequests;
+    }
+
+    public List<Request> getViewedRequests() {
+        return viewedRequests;
     }
 
     public void acceptRequest(Request request) {

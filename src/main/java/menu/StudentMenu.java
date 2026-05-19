@@ -74,7 +74,6 @@ public class StudentMenu {
         for (int i = 0; i < available.size(); i++) {
             Course c = available.get(i);
             System.out.printf("  %d. %s%n", i + 1, c);
-            // ✅ FIX: Show teacher info for each available course
             if (c.getLectureTeacher() != null)
                 System.out.println("       Lecture:  " + c.getLectureTeacher().getFullName()
                         + " [" + c.getLectureTeacher().getTeacherPosition() + "]"
@@ -125,7 +124,6 @@ public class StudentMenu {
         System.out.println("\n-- My Courses --");
         myCourses.forEach(c -> {
             System.out.println(c);
-            // ✅ FIX: Always show teacher info per course
             if (c.getLectureTeacher() != null)
                 System.out.println("   Lecture:  " + c.getLectureTeacher().getFullName()
                         + " | Rating: " + String.format("%.1f", c.getLectureTeacher().getRating()));

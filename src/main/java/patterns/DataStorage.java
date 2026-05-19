@@ -52,10 +52,8 @@ public class DataStorage implements Serializable {
         return instance;
     }
 
-    // =========================
-    // Serialization
-    // =========================
 
+    // Serialization
     public void save(String filename) {
         try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(filename))) {
             oos.writeObject(this);
@@ -76,10 +74,7 @@ public class DataStorage implements Serializable {
         }
     }
 
-    // =========================
     // Users
-    // =========================
-
     public void addUser(User user) {
         if (user != null && getUserById(user.getId()) == null) {
             users.add(user);
@@ -140,10 +135,7 @@ public class DataStorage implements Serializable {
                 .collect(Collectors.toList());
     }
 
-    // =========================
     // Courses
-    // =========================
-
     public void addCourse(Course course) {
         if (course != null && getCourseByCode(course.getCode()) == null) {
             courses.add(course);
@@ -177,10 +169,7 @@ public class DataStorage implements Serializable {
                 .collect(Collectors.toList());
     }
 
-    // =========================
     // News
-    // =========================
-
     public void addNews(News n) {
         if (n != null) {
             news.add(n);
@@ -205,10 +194,7 @@ public class DataStorage implements Serializable {
                 .collect(Collectors.toList());
     }
 
-    // =========================
     // Journals
-    // =========================
-
     public void addJournal(Journal journal) {
         if (journal != null && !journals.contains(journal)) {
             journals.add(journal);
@@ -226,10 +212,7 @@ public class DataStorage implements Serializable {
         return journals;
     }
 
-    // =========================
     // Requests
-    // =========================
-
     public void addRequest(Request request) {
         if (request != null) {
             requests.add(request);
@@ -246,10 +229,7 @@ public class DataStorage implements Serializable {
                 .collect(Collectors.toList());
     }
 
-    // =========================
     // Researchers
-    // =========================
-
     public void addResearcher(ResearcherDecorator researcher) {
         if (researcher != null && !researchers.contains(researcher)) {
             researchers.add(researcher);
@@ -297,10 +277,7 @@ public class DataStorage implements Serializable {
                 .forEach(System.out::println);
     }
 
-    // =========================
     // Organizations
-    // =========================
-
     public void addOrganization(StudentOrganization org) {
         if (org != null && !organizations.contains(org)) {
             organizations.add(org);
@@ -311,10 +288,7 @@ public class DataStorage implements Serializable {
         return organizations;
     }
 
-    // =========================
     // Logs
-    // =========================
-
     public void addLog(String entry) {
         logs.add(LocalDateTime.now() + ": " + entry);
     }

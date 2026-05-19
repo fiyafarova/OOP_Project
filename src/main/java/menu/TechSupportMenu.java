@@ -51,9 +51,14 @@ public class TechSupportMenu {
     }
 
     private void handleRequest(String action) {
-        List<Request> requests = specialist.viewRequests();
+        List<Request> requests = action.equals("done")
+                ? specialist.viewRequests()
+                : specialist.getViewedRequests();
+
         if (requests.isEmpty()) {
-            System.out.println("No assigned requests. View new requests first.");
+            System.out.println(action.equals("done")
+                    ? "No accepted requests."
+                    : "No viewed requests. View new requests first.");
             return;
         }
         for (int i = 0; i < requests.size(); i++)

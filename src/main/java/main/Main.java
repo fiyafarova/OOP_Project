@@ -36,7 +36,7 @@ public class Main {
         if (new File(DATA_FILE).exists()) {
             DataStorage.load(DATA_FILE);
         } else {
-            System.out.println("First launch — creating test data...");
+            System.out.println("First launch - creating test data");
             createTestData();
             DataStorage.getInstance().save(DATA_FILE);
         }
@@ -381,13 +381,13 @@ public class Main {
 
         ds.addLog("Test data initialized.");
         System.out.println("Test data created successfully.");
-        System.out.println("  Admin        → login: admin       / password: admin123");
-        System.out.println("  Manager      → login: manager     / password: mgr123");
-        System.out.println("  Support      → login: support     / password: sup123");
-        System.out.println("  Teacher      → login: jsmith      / password: pass123");
-        System.out.println("  Professor    → login: aivanova    / password: pass123");
-        System.out.println("  Student      → login: bakhmetov   / password: stu123");
-        System.out.println("  Graduate     → login: aresearcher / password: grad123");
-        System.out.println("  PhD Student  → login: daniyar     / password: phd123");
+        System.out.println("  Admin         login: admin       / password: admin123");
+        System.out.println("  Manager       login: manager     / password: mgr123");
+        System.out.println("  Support       login: support     / password: sup123");
+        System.out.println("  Teacher       login: jsmith      / password: pass123");
+        System.out.println("  Professor     login: aivanova    / password: pass123");
+        System.out.println("  Student       login: bakhmetov   / password: stu123");
+        System.out.println("  Graduate      login: aresearcher / password: grad123");
+        System.out.println("  PhD Student   login: daniyar     / password: phd123");
     }
 }

@@ -132,7 +132,7 @@ public class LanguageManager {
         add("course.dropped", "Курстан шықтыңыз.", "Course dropped.", "Вы отказались от курса.");
         add("course.no_registered", "Тіркелген курстар жоқ.", "No registered courses.", "Нет зарегистрированных курсов.");
 
-        //  Marks / Transcript─
+        //  Marks / Transcript
         add("marks.no_marks", "Бағалар жоқ.", "No marks yet.", "Оценок пока нет.");
         add("transcript.header", "========== ТРАНСКРИПТ ==========", "========== TRANSCRIPT ==========", "========== ТРАНСКРИПТ ==========");
         add("transcript.student", "Студент  : ", "Student  : ", "Студент  : ");
