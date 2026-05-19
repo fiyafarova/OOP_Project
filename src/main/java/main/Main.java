@@ -237,7 +237,7 @@ public class Main {
         t2Data.put("login", "aivanova");
         t2Data.put("password", "pass123");
         t2Data.put("position", "PROFESSOR");
-        Teacher teacher2 = UserFactory.createTeacher(t2Data, School.SB);
+        Teacher teacher2 = UserFactory.createTeacher(t2Data, School.BS);
         ds.addUser(teacher2);
 
         // Students
@@ -256,7 +256,7 @@ public class Main {
         s2Data.put("login", "dseitkali");
         s2Data.put("password", "stu123");
         s2Data.put("year", "1");
-        Student student2 = UserFactory.createStudent(s2Data, School.SB);
+        Student student2 = UserFactory.createStudent(s2Data, School.BS);
         ds.addUser(student2);
 
         // Graduate Student (MASTER)
@@ -327,8 +327,8 @@ public class Main {
 
         // Courses
         Course c1 = new Course("CS101", "Introduction to Programming", 5, School.SITE, CourseType.MAJOR);
-        Course c2 = new Course("MATH101", "Calculus", 5, School.SB, CourseType.MAJOR);
-        Course c3 = new Course("ENG101", "Academic English", 3, School.SHI, CourseType.FREE_ELECTIVE);
+        Course c2 = new Course("MATH101", "Calculus", 5, School.BS, CourseType.MAJOR);
+        Course c3 = new Course("ENG101", "Academic English", 3, School.SCE, CourseType.FREE_ELECTIVE);
 
         c1.setLectureTeacher(teacher1);
         teacher1.addCourse(c1);
